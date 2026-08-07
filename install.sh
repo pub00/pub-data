@@ -171,8 +171,8 @@ if [[ "$INSTALL_MODE" == "2" ]]; then
     echo "  2) No (Fresh Installation - WILL WIPE TARGET PARTITIONS)"
     ask_input "Choose type" "2" "INSTALL_TYPE"
 
-    ask_input "EFI Partition path" "/dev/${TARGET_DEV}1" "EFI_PART"
-    ask_input "Root Partition path" "/dev/${TARGET_DEV}2" "ROOT_PART"
+    ask_input "EFI Partition path" "/dev/${TARGET_DEV}p1" "EFI_PART"
+    ask_input "Root Partition path" "/dev/${TARGET_DEV}p2" "ROOT_PART"
     BOOT_MOUNT="/mnt/boot/efi"
 
     echo ""
