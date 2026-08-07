@@ -243,7 +243,7 @@ else
     echo -e "\n${BOLD}Is this a dual-boot installation (using an existing EFI partition)?${NC}"
     echo "1) Yes (Dual-boot)"
     echo "2) No (Fresh Installation - WILL WIPE DISK)"
-    ask_input "Choose an option" "2" "INSTALL_TYPE"
+    ask_input "Choose an option" "1" "INSTALL_TYPE"
 
     if [[ "$INSTALL_TYPE" == "1" ]]; then
         msg "Dual-boot selected. Please partition manually."
@@ -264,8 +264,8 @@ else
         wait_step
         run_cmd "cfdisk $TARGET_PATH"
 
-        ask_input "Enter the EFI partition path" "/dev/${TARGET_DEV}1" "EFI_PART"
-        ask_input "Enter the Root partition path" "/dev/${TARGET_DEV}2" "ROOT_PART"
+        ask_input "Enter the EFI partition path" "/dev/${TARGET_DEV}p1" "EFI_PART"
+        ask_input "Enter the Root partition path" "/dev/${TARGET_DEV}p2" "ROOT_PART"
         BOOT_MOUNT="/mnt/boot/efi"
 
         until run_cmd "mkfs.fat -F32 $EFI_PART"; do
