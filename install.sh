@@ -250,8 +250,8 @@ else
         warn "Ensure you have an EFI partition (FAT32) and a Root partition."
         run_cmd "cfdisk $TARGET_PATH"
 
-        ask_input "Enter the EFI partition path (e.g., /dev/vda1)" "/dev/${TARGET_DEV}1" "EFI_PART"
-        ask_input "Enter the Root partition path (e.g., /dev/vda2)" "/dev/${TARGET_DEV}2" "ROOT_PART"
+        ask_input "Enter the EFI partition path (e.g., /dev/vda1)" "/dev/${TARGET_DEV}p1" "EFI_PART"
+        ask_input "Enter the Root partition path (e.g., /dev/vda2)" "/dev/${TARGET_DEV}p2" "ROOT_PART"
         BOOT_MOUNT="/mnt/boot/efi"
     else
         msg "Fresh installation selected. Preparing disk..."
