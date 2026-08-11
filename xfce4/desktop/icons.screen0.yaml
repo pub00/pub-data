@@ -12,120 +12,199 @@ configs:
       width: 1920
       height: 1200
   icons:
-    "/home/someone/Desktop/chrome_profiles_EncryptedData_2026-08-10_15-16.tar.gz":
-      row: 1
-      col: 2
-    "/home/someone/Desktop/Screenshot_2026-08-10_01-11-26.png":
-      row: 3
+    "/home/someone/Desktop/sedjTq2op":
+      row: 4
+      col: 1
+    "/home/someone/Desktop/sedfNYY3V":
+      row: 4
       col: 1
     "/home/someone/Desktop/sedmZO9WE":
       row: 0
       col: 2
-    "/home/someone/Desktop/xfce4-terminal-emulator.desktop":
-      row: 2
-      col: 1
-    "/home/someone/Desktop/Screenshot_2026-08-10_15-21-46.png":
-      row: 4
-      col: 1
-    "/home/someone":
-      row: 0
-      col: 0
-    "/home/someone/Desktop/sedyvdOcU":
-      row: 4
+    "/home/someone/Desktop/sedQkuQqG":
+      row: 3
       col: 1
     "/home/someone/Desktop/sed7tFkfB":
       row: 3
       col: 0
-    "/home/someone/Desktop/sedt2rtk7":
-      row: 0
-      col: 2
-    "/home/someone/Desktop/sedhMVLVq":
-      row: 0
-      col: 2
-    "/home/someone/Desktop/sedjTq2op":
-      row: 4
-      col: 1
-    "/home/someone/Desktop/sedXBCV8x":
-      row: 3
-      col: 0
-    "/home/someone/Desktop/chrome_profiles.desktop":
-      row: 2
-      col: 0
-    "/home/someone/Desktop/sed4Y9IR3":
-      row: 4
-      col: 1
-    "/home/someone/Desktop/sed9FQOLf":
-      row: 4
-      col: 1
-    "/home/someone/Desktop/sed4tAGCk":
-      row: 3
-      col: 0
-    "/home/someone/Desktop/sed3F1c0X":
-      row: 0
-      col: 2
     "/home/someone/Desktop/sedo3AbRo":
       row: 4
       col: 1
-    "/home/someone/Desktop/My Memories Vault":
-      row: 3
+    "/home/someone/Desktop/sedhMVLVq":
+      row: 0
+      col: 2
+    "/home/someone/Desktop/sedp7m7gK":
+      row: 0
+      col: 2
+    "/home/someone/Desktop/sedyvdOcU":
+      row: 4
       col: 1
-    "/home/someone/Desktop/sedPssUSh":
+    "/home/someone/Desktop/sedVjSSSz":
+      row: 4
+      col: 1
+    "/home/someone/Desktop/sed4Y9IR3":
+      row: 4
+      col: 1
+    "/home/someone/Desktop/Data_EncryptedData_2026-08-10_15-13.tar.gz":
+      row: 2
+      col: 2
+    "/home/someone/Desktop/sed3F1c0X":
       row: 0
       col: 2
     "/home/someone/Desktop/sedq4n4iH":
       row: 4
       col: 0
-    "/home/someone/Desktop/sedVjSSSz":
+    "/home/someone/Desktop/sed9FQOLf":
       row: 4
       col: 1
+    "/home/someone/Desktop/sedmCi1RK":
+      row: 3
+      col: 1
+    "/home/someone/Desktop/sedptvQ3q":
+      row: 3
+      col: 0
+    "/home/someone/Desktop/sedPssUSh":
+      row: 0
+      col: 2
     "/home/someone/Desktop/sedzmxp04":
       row: 4
       col: 1
     "/home/someone/Desktop/sed3Hx4jM":
       row: 4
       col: 0
-    "/home/someone/Desktop/google-chrome.desktop":
-      row: 4
-      col: 0
-    "/home/someone/Desktop/Data.desktop":
-      row: 3
-      col: 0
-    "/home/someone/Desktop/sedQkuQqG":
-      row: 3
-      col: 1
-    "/home/someone/Desktop/sedvC3WTh":
+    "/home/someone/Desktop/chrome_profiles_EncryptedData_2026-08-10_15-16.tar.gz":
+      row: 1
+      col: 2
+    "/home/someone/Desktop/sedt2rtk7":
       row: 0
       col: 2
-    "/home/someone/Desktop/firefox.desktop":
-      row: 0
-      col: 1
     "/home/someone/Desktop/sedBwD15L":
       row: 4
       col: 1
-    "/home/someone/Desktop/sedp7m7gK":
-      row: 0
-      col: 2
-    "/":
-      row: 1
-      col: 0
-    "/home/someone/Desktop/obsidian.desktop":
-      row: 1
+    "/home/someone/Desktop/Screenshot_2026-08-10_01-11-26.png":
+      row: 3
       col: 1
-    "/home/someone/Desktop/sedptvQ3q":
+    "/home/someone/Desktop/sed4tAGCk":
       row: 3
       col: 0
-    "/home/someone/Desktop/Data_EncryptedData_2026-08-10_15-13.tar.gz":
-      row: 2
+    "/home/someone/Desktop/Screenshot_2026-08-10_15-21-46.png":
+      row: 4
+      col: 1
+    "/home/someone/Desktop/sedXBCV8x":
+      row: 3
+      col: 0
+    "/home/someone/Desktop/sedvC3WTh":
+      row: 0
       col: 2
     "/home/someone/Desktop/sedPWT6Yy":
       row: 4
       col: 1
-    "/home/someone/Desktop/sedfNYY3V":
+- level: 0
+  monitors:
+  - id: "6d2eb4fea4cdb1a737c4346d6f6d4108ffa74447"
+    display_name: "AU Optronics 0xA49A (eDP)"
+    geometry:
+      x: 0
+      y: 0
+      width: 960
+      height: 600
+  icons:
+    "/home/someone/Desktop/secure_manager":
+      row: 7
+      col: 1
+    "/home/someone/Desktop/xfce4-terminal-emulator.desktop":
+      row: 6
+      col: 0
+    "/home/someone/Desktop/sedMDW2XW":
+      row: 1
+      col: 1
+    "/home/someone":
+      row: 0
+      col: 0
+    "/home/someone/Desktop/sedZYK4dG":
+      row: 1
+      col: 2
+    "/home/someone/Desktop/sed6Poayk":
+      row: 0
+      col: 2
+    "/home/someone/Desktop/sedtHH6tN":
+      row: 0
+      col: 2
+    "/home/someone/Desktop/sednecxaB":
+      row: 1
+      col: 1
+    "/home/someone/Desktop/pub-data":
+      row: 1
+      col: 1
+    "/home/someone/Desktop/.pw":
+      row: 10
+      col: 0
+    "/home/someone/Desktop/chrome_profiles.desktop":
+      row: 3
+      col: 0
+    "/home/someone/Desktop/arch-forge.sh":
+      row: 3
+      col: 1
+    "/home/someone/Desktop/sedPsXEgx":
+      row: 1
+      col: 1
+    "/home/someone/Desktop/G-manager":
+      row: 2
+      col: 1
+    "/home/someone/Desktop/.git":
+      row: 1
+      col: 1
+    "/home/someone/Desktop/seds2vgQj":
+      row: 0
+      col: 2
+    "/home/someone/Desktop/My Memories Vault":
+      row: 5
+      col: 0
+    "/home/someone/Desktop/bg":
       row: 4
       col: 1
-    "/home/someone/Desktop/sedmCi1RK":
-      row: 3
+    "/home/someone/Desktop/Data.desktop":
+      row: 2
+      col: 0
+    "/home/someone/Desktop/sedck92X4":
+      row: 0
+      col: 2
+    "/home/someone/Desktop/google-chrome.desktop":
+      row: 9
+      col: 0
+    "/home/someone/Desktop/pw.desktop":
+      row: 0
+      col: 1
+    "/home/someone/Desktop/firefox.desktop":
+      row: 8
+      col: 0
+    "/home/someone/Desktop/sedq8gbw3":
+      row: 1
+      col: 2
+    "/home/someone/Desktop/sedFxlhEl":
+      row: 0
+      col: 2
+    "/home/someone/Desktop/install.sh":
+      row: 6
+      col: 1
+    "/":
+      row: 1
+      col: 0
+    "/home/someone/Desktop/sedwfehmq":
+      row: 10
+      col: 0
+    "/home/someone/Desktop/obsidian.desktop":
+      row: 7
+      col: 0
+    "/home/someone/Desktop/myFonts.txt":
+      row: 0
+      col: 2
+    "/home/someone/Desktop/git_helper":
+      row: 5
+      col: 1
+    "/home/someone/Desktop/xfce4":
+      row: 8
       col: 1
     "/home/someone/Desktop/antigravity.desktop":
       row: 4
-      col: 1
+      col: 0

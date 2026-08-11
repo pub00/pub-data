@@ -67,16 +67,16 @@
     <property name="plugin-19" type="string" value="battery"/>
     <property name="plugin-21" type="string" value="whiskermenu">
       <property name="recent" type="array">
+        <value type="string" value="antigravity.desktop"/>
+        <value type="string" value="xfce4-mime-settings.desktop"/>
         <value type="string" value="xfce4-about.desktop"/>
         <value type="string" value="obsidian.desktop"/>
-        <value type="string" value="antigravity.desktop"/>
         <value type="string" value="xfce4-screenshooter.desktop"/>
         <value type="string" value="org.xfce.mousepad.desktop"/>
         <value type="string" value="google-chrome.desktop"/>
         <value type="string" value="xfce-mouse-settings.desktop"/>
         <value type="string" value="firefox.desktop"/>
         <value type="string" value="xfce4-color-settings.desktop"/>
-        <value type="string" value="xfce4-taskmanager.desktop"/>
       </property>
       <property name="favorites" type="array">
         <value type="string" value="xfce4-web-browser.desktop"/>
