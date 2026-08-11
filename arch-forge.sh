@@ -358,56 +358,54 @@ install_tools() {
 
     ensure_yay
 
-    # --- Archive tools (unzip, xarchiver) ---
-    msg "Installing Archive utilities (unzip, xarchiver)"
-    run_cmd "sudo pacman -S --noconfirm unzip xarchiver"
-    check_success "Archive tools (unzip & xarchiver)"
-    wait_step
+    # Helper function to smartly install a package if it's not already installed
+    smart_install() {
+        local pkg="$1"
+        local manager="$2" # "pacman" or "yay"
+        local custom_cmd="$3" # Optional: Custom command to install
 
-    # --- firefox ---
-    msg "Installing Firefox"
-    run_cmd "sudo pacman -S --noconfirm firefox"
-    check_success "Firefox"
-    wait_step
+        # Check if the package is already installed
+        if pacman -Qq "$pkg" &> /dev/null; then
+            echo -e " ${GREEN}[✓]${NC} $pkg is already installed. Skipping."
+        else
+            echo -e " ${CYAN}[+]${NC} Installing $pkg..."
+            if [ -n "$custom_cmd" ]; then
+                run_cmd "$custom_cmd"
+            elif [ "$manager" = "pacman" ]; then
+                run_cmd "sudo pacman -S --noconfirm $pkg"
+            elif [ "$manager" = "yay" ]; then
+                # Some yay packages might prompt, so --noconfirm is used to automate
+                run_cmd "yay -S --noconfirm $pkg"
+            else
+                warn "Unknown package manager: $manager for $pkg"
+                return 1
+            fi
+            check_success "$pkg"
+        fi
+    }
 
-    # --- inkscape ---
-    msg "Installing Inkscape"
-    run_cmd "sudo pacman -S --noconfirm inkscape"
-    check_success "Inkscape"
-    wait_step
+    msg "Checking and installing Useful Tools..."
 
-    # --- htop ---
-    msg "Installing htop"
-    run_cmd "sudo pacman -S --noconfirm htop"
-    check_success "htop"
-    wait_step
+    # --- Official Repositories (pacman) ---
+    smart_install "unzip" "pacman"
+    smart_install "xarchiver" "pacman"
+    smart_install "firefox" "pacman"
+    smart_install "inkscape" "pacman"
+    smart_install "htop" "pacman"
+    smart_install "obsidian" "pacman"
 
-    # --- google-chrome ---
-    msg "Installing Google Chrome (from AUR)"
-    run_cmd "yay -S google-chrome"
-    check_success "Google Chrome"
-    wait_step
+    # --- AUR Packages (yay) ---
+    smart_install "google-chrome" "yay"
+    smart_install "bibata-cursor-theme" "yay"
+    smart_install "antigravity" "yay"
 
-    # --- obsidian ---
-    msg "Installing Obsidian"
-    run_cmd "sudo pacman -S --noconfirm obsidian"
-    check_success "Obsidian"
-    wait_step
+    # Example of adding a custom tool in the future:
+    # smart_install "my-custom-tool" "custom" "curl -sS https://example.com/install.sh | bash"
 
-    # --- bibata-cursor-theme ---
-    msg "Installing Bibata Cursor Theme (from AUR)"
-    run_cmd "yay -S bibata-cursor-theme"
-    check_success "Bibata Cursor Theme"
-    wait_step
-
-    # --- antigravity ---
-    msg "Installing Antigravity (AI Coding Assistant)"
-    run_cmd "yay -S antigravity"
-    check_success "Antigravity"
     wait_step
 
     mark_completed "tools"
-    success "All useful tools installed!"
+    success "All useful tools are installed!"
 }
 
 # ==============================================================================
