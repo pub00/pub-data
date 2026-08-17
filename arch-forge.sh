@@ -159,9 +159,13 @@ show_menu() {
     echo -e "  ${CYAN}9)${NC} Install Git Helper (from pub00/pub-data)$(get_status "git_helper")"
     echo -e "  ${CYAN}10)${NC} Download Wallpapers (from GitHub bg/ folder)$(get_status "wallpapers")"
     echo -e "  ${CYAN}11)${NC} Apply Arabic System Font (Noto Naskh Arabic)$(get_status "arabic_font")"
-    echo -e "  ${CYAN}12)${NC} Exit"
+    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+    echo -e "  ${CYAN}12)${NC} Setup Webcam (v4l-utils + guvcview)$(get_status "webcam")"
+    echo -e "  ${CYAN}13)${NC} Install VLC Media Player (Hardware Accelerated)$(get_status "vlc")"
+    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+    echo -e "  ${CYAN}14)${NC} Exit"
     echo ""
-    read -p "Select an option [1-12]: " opt
+    read -p "Select an option [1-14]: " opt
 }
 
 # ==============================================================================
@@ -716,6 +720,191 @@ EOF
 }
 
 # ==============================================================================
+# SECTION 12: WEBCAM SETUP (v4l-utils + guvcview)
+# ==============================================================================
+
+setup_webcam() {
+    section_header "SECTION 12: WEBCAM SETUP"
+
+    # --- Step 1: Install camera utilities ---
+    msg "Step 1: Installing Video4Linux utilities (v4l-utils)"
+    brief "v4l-utils provides v4l2-ctl for diagnosing and controlling
+       webcam devices under Linux (Video4Linux2 framework)."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm v4l-utils"
+    check_success "v4l-utils installation"
+    wait_step
+
+    # --- Step 2: Detect camera devices ---
+    msg "Step 2: Detecting webcam devices"
+    brief "Listing all Video4Linux devices to identify your camera.
+       A single camera may register multiple /dev/video* nodes
+       (main stream, metadata, IR sensor, etc.)."
+    echo ""
+    if ls /dev/video* &>/dev/null; then
+        success "Video devices found:"
+        run_cmd "ls /dev/video*"
+        echo ""
+        run_cmd "v4l2-ctl --list-devices"
+    else
+        warn "No video devices found (/dev/video*). Camera may not be connected or recognized."
+    fi
+    wait_step
+
+    # --- Step 3: Show primary camera formats ---
+    msg "Step 3: Identifying primary camera stream"
+    brief "Checking /dev/video0 for supported formats and resolutions.
+       The device that lists MJPEG/YUYV formats with real resolutions
+       is the actual video stream."
+    echo ""
+    if [ -e /dev/video0 ]; then
+        run_cmd "v4l2-ctl --list-formats-ext -d /dev/video0"
+    else
+        warn "/dev/video0 not found. Skipping format check."
+    fi
+    wait_step
+
+    # --- Step 4: Install guvcview ---
+    msg "Step 4: Installing guvcview (GTK+ UVC Viewer)"
+    brief "guvcview is a lightweight webcam viewer and capture tool.
+       Lets you preview the camera feed, adjust settings, and take photos/videos."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm guvcview"
+    check_success "guvcview installation"
+    wait_step
+
+    # --- Step 5: Privacy tips ---
+    msg "Step 5: Camera Privacy & Monitoring Tips"
+    echo ""
+    echo -e "  ${BOLD}Check who is using the camera right now:${NC}"
+    echo -e "  ${CYAN}  sudo fuser -v /dev/video0${NC}"
+    echo ""
+    echo -e "  ${BOLD}Quick test - open camera preview:${NC}"
+    echo -e "  ${CYAN}  guvcview${NC}"
+    echo ""
+    echo -e "  ${BOLD}Disable camera temporarily (until reboot):${NC}"
+    echo -e "  ${CYAN}  sudo modprobe -r uvcvideo${NC}"
+    echo ""
+    echo -e "  ${BOLD}Re-enable camera:${NC}"
+    echo -e "  ${CYAN}  sudo modprobe uvcvideo${NC}"
+    echo ""
+    wait_step
+
+    mark_completed "webcam"
+    success "Webcam setup complete! Run 'guvcview' to preview your camera."
+}
+
+# ==============================================================================
+# SECTION 13: VLC MEDIA PLAYER (HARDWARE ACCELERATED)
+# ==============================================================================
+
+install_vlc() {
+    section_header "SECTION 13: VLC MEDIA PLAYER (HARDWARE ACCELERATED)"
+
+    # --- Step 1: Detect GPU vendor ---
+    msg "Step 1: Detecting GPU type for hardware acceleration"
+    brief "Identifying whether your GPU is AMD or Intel to install
+       the correct VA-API driver for hardware video decoding."
+    echo ""
+
+    local GPU_VENDOR="unknown"
+    if lspci | grep -iE 'VGA|Display' | grep -iq 'AMD\|Radeon'; then
+        GPU_VENDOR="amd"
+        success "Detected AMD GPU"
+    elif lspci | grep -iE 'VGA|Display' | grep -iq 'Intel'; then
+        GPU_VENDOR="intel"
+        success "Detected Intel GPU"
+    else
+        warn "Could not auto-detect GPU vendor. Will install base packages only."
+    fi
+    wait_step
+
+    # --- Step 2: Install VA-API driver based on GPU ---
+    msg "Step 2: Installing VA-API driver for hardware video decoding"
+    echo ""
+
+    case $GPU_VENDOR in
+        amd)
+            brief "AMD GPUs use Mesa's built-in VA-API support.
+       libva-utils provides 'vainfo' to verify VA-API functionality.
+       radeontop lets you monitor GPU activity (including VCN/video engine)."
+            echo ""
+            run_cmd "sudo pacman -S --noconfirm libva-utils radeontop"
+            check_success "AMD VA-API utilities"
+            ;;
+        intel)
+            brief "Intel GPUs need dedicated VA-API drivers:
+       libva-intel-driver = older Intel GPUs (up to Coffee Lake).
+       intel-media-driver = newer Intel GPUs (Broadwell+).
+       libvdpau = VDPAU compatibility layer."
+            echo ""
+            run_cmd "sudo pacman -S --noconfirm libva-utils libva-intel-driver intel-media-driver libvdpau"
+            check_success "Intel VA-API drivers"
+            ;;
+        *)
+            brief "Installing libva-utils only. You may need to manually install
+       the correct VA-API driver for your GPU."
+            echo ""
+            run_cmd "sudo pacman -S --noconfirm libva-utils"
+            check_success "VA-API base utilities"
+            ;;
+    esac
+    wait_step
+
+    # --- Step 3: Verify VA-API ---
+    msg "Step 3: Verifying VA-API support"
+    brief "Running 'vainfo' to confirm hardware video decoding is active.
+       You should see supported profiles like H.264, HEVC, VP9, AV1."
+    echo ""
+    run_cmd "vainfo"
+    check_success "VA-API verification"
+    wait_step
+
+    # --- Step 4: Install VLC ---
+    msg "Step 4: Installing VLC media player"
+    brief "VLC is a free, open-source multimedia player that supports
+       virtually every audio and video format."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm vlc"
+    check_success "VLC installation"
+    wait_step
+
+    # --- Step 5: Install FFmpeg plugin for VA-API in VLC ---
+    msg "Step 5: Installing VLC FFmpeg plugin (VA-API hardware decoding)"
+    brief "vlc-plugin-ffmpeg contains the VA-API output plugins:
+       libvaapi_drm_plugin.so and libvaapi_plugin.so
+       Without this, VLC cannot use GPU hardware decoding."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm vlc-plugin-ffmpeg"
+    check_success "VLC FFmpeg plugin"
+    wait_step
+
+    # --- Step 6: Configuration guide ---
+    msg "Step 6: VLC Hardware Decoding Configuration"
+    echo ""
+    echo -e "  ${BOLD}To enable hardware decoding in VLC:${NC}"
+    echo -e "  ${CYAN}  1. Open VLC${NC}"
+    echo -e "  ${CYAN}  2. Tools → Preferences → Input / Codecs${NC}"
+    echo -e "  ${CYAN}  3. Set 'Hardware-accelerated decoding' to:${NC}"
+    echo -e "     ${GREEN}${BOLD}VA-API video decoder${NC}"
+    echo -e "  ${CYAN}  4. Save → Close VLC completely → Reopen${NC}"
+    echo ""
+    echo -e "  ${BOLD}Verify it's working:${NC}"
+    echo -e "  ${CYAN}  vlc -vvv video.mkv 2>&1 | grep -iE 'vaapi|hardware|decoder'${NC}"
+    echo ""
+    if [ "$GPU_VENDOR" = "amd" ]; then
+        echo -e "  ${BOLD}Monitor AMD GPU activity during playback:${NC}"
+        echo -e "  ${CYAN}  radeontop${NC}"
+        echo -e "  ${DIM}  (Look for activity in Video/VCN while playing)${NC}"
+        echo ""
+    fi
+    wait_step
+
+    mark_completed "vlc"
+    success "VLC installed with hardware acceleration! Enjoy your media."
+}
+
+# ==============================================================================
 # MAIN LOOP
 # ==============================================================================
 
@@ -733,7 +922,9 @@ while true; do
         9) install_git_helper ;;
         10) download_wallpapers ;;
         11) apply_arabic_font ;;
-        12) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
+        12) setup_webcam ;;
+        13) install_vlc ;;
+        14) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
         *) warn "Invalid option." ;;
     esac
     echo ""
