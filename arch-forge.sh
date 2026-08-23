@@ -164,9 +164,10 @@ show_menu() {
     echo -e "  ${CYAN}13)${NC} Install VLC Media Player (Hardware Accelerated)$(get_status "vlc")"
     echo -e "  ${CYAN}14)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-    echo -e "  ${CYAN}15)${NC} Exit"
+    echo -e "  ${YELLOW}15)${NC} Quick Reference (Useful Commands)"
+    echo -e "  ${CYAN}16)${NC} Exit"
     echo ""
-    read -p "Select an option [1-15]: " opt
+    read -p "Select an option [1-16]: " opt
 }
 
 # ==============================================================================
@@ -959,201 +960,120 @@ install_bluetooth() {
 
     mark_completed "bluetooth"
     success "Bluetooth stack installed and service is running!"
+
+    # --- Step 5: Bluetooth Command Reference ---
+    msg "Step 5: Bluetooth Quick Reference"
     echo ""
+    echo -e "  ${BOLD}Enter interactive mode:${NC}"
+    echo -e "  ${CYAN}  bluetoothctl${NC}"
+    echo ""
+    echo -e "  ${BOLD}Power ON / OFF:${NC}"
+    echo -e "  ${CYAN}  bluetoothctl power on${NC}"
+    echo -e "  ${CYAN}  bluetoothctl power off${NC}"
+    echo ""
+    echo -e "  ${BOLD}Check status:${NC}"
+    echo -e "  ${CYAN}  bluetoothctl show${NC}            ${DIM}# Powered: yes/no${NC}"
+    echo ""
+    echo -e "  ${BOLD}Scan, Pair & Connect a device:${NC}"
+    echo -e "  ${CYAN}  bluetoothctl scan on${NC}         ${DIM}# start scanning${NC}"
+    echo -e "  ${CYAN}  bluetoothctl scan off${NC}        ${DIM}# stop scanning${NC}"
+    echo -e "  ${CYAN}  bluetoothctl pair XX:XX:XX:XX:XX:XX${NC}"
+    echo -e "  ${CYAN}  bluetoothctl trust XX:XX:XX:XX:XX:XX${NC}"
+    echo -e "  ${CYAN}  bluetoothctl connect XX:XX:XX:XX:XX:XX${NC}"
+    echo ""
+    echo -e "  ${BOLD}Manage devices:${NC}"
+    echo -e "  ${CYAN}  bluetoothctl devices${NC}         ${DIM}# list known devices${NC}"
+    echo -e "  ${CYAN}  bluetoothctl info XX:XX:..${NC}   ${DIM}# Paired/Trusted/Connected${NC}"
+    echo -e "  ${CYAN}  bluetoothctl disconnect XX:XX:..${NC}"
+    echo -e "  ${CYAN}  bluetoothctl remove XX:XX:..${NC}  ${DIM}# unpair device${NC}"
+    echo ""
+    echo -e "  ${BOLD}Service management:${NC}"
+    echo -e "  ${CYAN}  systemctl status bluetooth${NC}   ${DIM}# check service${NC}"
+    echo -e "  ${CYAN}  sudo systemctl restart bluetooth${NC}"
+    echo ""
+    echo -e "  ${YELLOW}TIP:${NC} ${DIM}You can also view these commands anytime from the main menu → Quick Reference${NC}"
+    echo ""
+    wait_step
 
-    # --- Step 5: Interactive Bluetooth Management ---
-    echo -e "${YELLOW}${BOLD}Would you like to enter the Bluetooth Management menu?${NC}"
-    echo -e "${DIM}(Pair, connect, and manage Bluetooth devices)${NC}"
-    read -p "(y/n): " enter_bt_menu
-
-    if [[ "$enter_bt_menu" =~ ^[Yy]$ ]]; then
-        bluetooth_manager
-    fi
+    success "Bluetooth setup complete! Use the commands above to manage your devices."
 }
 
-# --- Bluetooth Management Submenu ---
-bluetooth_manager() {
-    local BT_RUNNING=true
+# ==============================================================================
+# SECTION 15: QUICK REFERENCE (Useful Commands)
+# ==============================================================================
 
-    while $BT_RUNNING; do
-        echo ""
-        echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════════════${NC}"
-        echo -e "          ${BOLD}🔵 Bluetooth Manager${NC}"
-        echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════════════${NC}"
-        echo ""
-        echo -e "  ${CYAN} 1)${NC} Power ON Bluetooth"
-        echo -e "  ${CYAN} 2)${NC} Power OFF Bluetooth"
-        echo -e "  ${CYAN} 3)${NC} Show Bluetooth Status (Powered?)"
-        echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-        echo -e "  ${CYAN} 4)${NC} Scan for Devices (discover nearby)"
-        echo -e "  ${CYAN} 5)${NC} List Known/Paired Devices"
-        echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-        echo -e "  ${CYAN} 6)${NC} Pair a Device"
-        echo -e "  ${CYAN} 7)${NC} Trust a Device"
-        echo -e "  ${CYAN} 8)${NC} Connect to a Device"
-        echo -e "  ${CYAN} 9)${NC} Disconnect a Device"
-        echo -e "  ${CYAN}10)${NC} Remove a Device (unpair)"
-        echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-        echo -e "  ${CYAN}11)${NC} Show Device Info"
-        echo -e "  ${CYAN}12)${NC} Full Auto-Connect (Scan → Pair → Trust → Connect)"
-        echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-        echo -e "  ${CYAN}13)${NC} Return to Main Menu"
-        echo ""
-        read -p "Select an option [1-13]: " bt_opt
+show_quick_reference() {
+    section_header "QUICK REFERENCE :: Useful Commands"
 
-        case $bt_opt in
-            1)
-                msg "Powering ON Bluetooth..."
-                bluetoothctl power on
-                ;;
-            2)
-                msg "Powering OFF Bluetooth..."
-                bluetoothctl power off
-                ;;
-            3)
-                msg "Bluetooth Controller Status:"
-                bluetoothctl show
-                ;;
-            4)
-                msg "Scanning for nearby devices... (10 seconds)"
-                brief "Starting discovery. Nearby devices will appear below.
-                   Scan runs for 10 seconds then stops automatically."
-                echo ""
-                bluetoothctl power on &>/dev/null
-                bluetoothctl agent on &>/dev/null
-                bluetoothctl default-agent &>/dev/null
-                # Run scan in background, wait 10s, then stop
-                bluetoothctl --timeout 10 scan on
-                echo ""
-                success "Scan complete. Use option 6 to pair a device."
-                ;;
-            5)
-                msg "Known/Paired Devices:"
-                bluetoothctl devices
-                ;;
-            6)
-                msg "Pair a Device"
-                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
-                read -p "MAC Address: " mac_addr
-                if [ -n "$mac_addr" ]; then
-                    bluetoothctl pair "$mac_addr"
-                else
-                    warn "No MAC address entered."
-                fi
-                ;;
-            7)
-                msg "Trust a Device"
-                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
-                read -p "MAC Address: " mac_addr
-                if [ -n "$mac_addr" ]; then
-                    bluetoothctl trust "$mac_addr"
-                else
-                    warn "No MAC address entered."
-                fi
-                ;;
-            8)
-                msg "Connect to a Device"
-                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
-                read -p "MAC Address: " mac_addr
-                if [ -n "$mac_addr" ]; then
-                    bluetoothctl connect "$mac_addr"
-                else
-                    warn "No MAC address entered."
-                fi
-                ;;
-            9)
-                msg "Disconnect a Device"
-                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
-                read -p "MAC Address: " mac_addr
-                if [ -n "$mac_addr" ]; then
-                    bluetoothctl disconnect "$mac_addr"
-                else
-                    warn "No MAC address entered."
-                fi
-                ;;
-            10)
-                msg "Remove (Unpair) a Device"
-                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
-                read -p "MAC Address: " mac_addr
-                if [ -n "$mac_addr" ]; then
-                    echo -e "${YELLOW}Are you sure you want to remove $mac_addr? (y/n)${NC}"
-                    read -p ": " confirm_remove
-                    if [[ "$confirm_remove" =~ ^[Yy]$ ]]; then
-                        bluetoothctl remove "$mac_addr"
-                    fi
-                else
-                    warn "No MAC address entered."
-                fi
-                ;;
-            11)
-                msg "Device Info"
-                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
-                read -p "MAC Address: " mac_addr
-                if [ -n "$mac_addr" ]; then
-                    bluetoothctl info "$mac_addr"
-                else
-                    warn "No MAC address entered."
-                fi
-                ;;
-            12)
-                msg "Full Auto-Connect Wizard"
-                brief "This will: Power ON → Scan (15s) → Show devices →
-                   Ask for MAC → Pair → Trust → Connect."
-                echo ""
+    # ── Bluetooth ──
+    echo -e "  ${BLUE}${BOLD}┌────────────────────────────────────────────────────────┐${NC}"
+    echo -e "  ${BLUE}${BOLD}│${NC}  ${BOLD}🔵 BLUETOOTH${NC}                                          ${BLUE}${BOLD}│${NC}"
+    echo -e "  ${BLUE}${BOLD}└────────────────────────────────────────────────────────┘${NC}"
+    echo -e "  ${CYAN}bluetoothctl power on${NC}              ${DIM}# turn on${NC}"
+    echo -e "  ${CYAN}bluetoothctl power off${NC}             ${DIM}# turn off${NC}"
+    echo -e "  ${CYAN}bluetoothctl show${NC}                  ${DIM}# controller status${NC}"
+    echo -e "  ${CYAN}bluetoothctl scan on${NC}               ${DIM}# discover devices${NC}"
+    echo -e "  ${CYAN}bluetoothctl scan off${NC}              ${DIM}# stop scanning${NC}"
+    echo -e "  ${CYAN}bluetoothctl devices${NC}               ${DIM}# list known devices${NC}"
+    echo -e "  ${CYAN}bluetoothctl pair XX:XX:..${NC}         ${DIM}# pair${NC}"
+    echo -e "  ${CYAN}bluetoothctl trust XX:XX:..${NC}        ${DIM}# trust${NC}"
+    echo -e "  ${CYAN}bluetoothctl connect XX:XX:..${NC}      ${DIM}# connect${NC}"
+    echo -e "  ${CYAN}bluetoothctl disconnect XX:XX:..${NC}   ${DIM}# disconnect${NC}"
+    echo -e "  ${CYAN}bluetoothctl info XX:XX:..${NC}         ${DIM}# device details${NC}"
+    echo -e "  ${CYAN}bluetoothctl remove XX:XX:..${NC}       ${DIM}# unpair/forget${NC}"
+    echo ""
 
-                # Power on & prepare agent
-                bluetoothctl power on
-                bluetoothctl agent on &>/dev/null
-                bluetoothctl default-agent &>/dev/null
-                echo ""
+    # ── Audio ──
+    echo -e "  ${BLUE}${BOLD}┌────────────────────────────────────────────────────────┐${NC}"
+    echo -e "  ${BLUE}${BOLD}│${NC}  ${BOLD}🔊 AUDIO (PipeWire)${NC}                                   ${BLUE}${BOLD}│${NC}"
+    echo -e "  ${BLUE}${BOLD}└────────────────────────────────────────────────────────┘${NC}"
+    echo -e "  ${CYAN}pactl info${NC}                         ${DIM}# audio server info${NC}"
+    echo -e "  ${CYAN}pactl list sinks short${NC}             ${DIM}# list output devices${NC}"
+    echo -e "  ${CYAN}pactl list sources short${NC}           ${DIM}# list input devices (mic)${NC}"
+    echo -e "  ${CYAN}pactl set-sink-volume @DEFAULT_SINK@ 80%${NC}  ${DIM}# set volume${NC}"
+    echo -e "  ${CYAN}pactl set-sink-mute @DEFAULT_SINK@ toggle${NC} ${DIM}# mute/unmute${NC}"
+    echo -e "  ${CYAN}pavucontrol${NC}                        ${DIM}# GUI volume mixer${NC}"
+    echo -e "  ${CYAN}alsamixer${NC}                          ${DIM}# TUI mixer${NC}"
+    echo ""
 
-                msg "Scanning for 15 seconds..."
-                bluetoothctl --timeout 15 scan on
-                echo ""
+    # ── GPU ──
+    echo -e "  ${BLUE}${BOLD}┌────────────────────────────────────────────────────────┐${NC}"
+    echo -e "  ${BLUE}${BOLD}│${NC}  ${BOLD}🎮 GPU & DISPLAY${NC}                                      ${BLUE}${BOLD}│${NC}"
+    echo -e "  ${BLUE}${BOLD}└────────────────────────────────────────────────────────┘${NC}"
+    echo -e "  ${CYAN}lspci -k | grep -A2 VGA${NC}            ${DIM}# GPU info & driver${NC}"
+    echo -e "  ${CYAN}glxinfo | grep 'OpenGL renderer'${NC}   ${DIM}# active renderer${NC}"
+    echo -e "  ${CYAN}vainfo${NC}                             ${DIM}# VA-API (hw video decode)${NC}"
+    echo -e "  ${CYAN}radeontop${NC}                          ${DIM}# AMD GPU monitor${NC}"
+    echo -e "  ${CYAN}nvidia-smi${NC}                         ${DIM}# NVIDIA GPU monitor${NC}"
+    echo -e "  ${CYAN}xrandr${NC}                             ${DIM}# display/resolution info${NC}"
+    echo ""
 
-                msg "Discovered devices:"
-                bluetoothctl devices
-                echo ""
+    # ── Webcam ──
+    echo -e "  ${BLUE}${BOLD}┌────────────────────────────────────────────────────────┐${NC}"
+    echo -e "  ${BLUE}${BOLD}│${NC}  ${BOLD}📷 WEBCAM${NC}                                             ${BLUE}${BOLD}│${NC}"
+    echo -e "  ${BLUE}${BOLD}└────────────────────────────────────────────────────────┘${NC}"
+    echo -e "  ${CYAN}v4l2-ctl --list-devices${NC}            ${DIM}# list camera devices${NC}"
+    echo -e "  ${CYAN}guvcview${NC}                           ${DIM}# open camera preview${NC}"
+    echo -e "  ${CYAN}sudo fuser -v /dev/video0${NC}          ${DIM}# who is using camera?${NC}"
+    echo -e "  ${CYAN}sudo modprobe -r uvcvideo${NC}          ${DIM}# disable camera${NC}"
+    echo -e "  ${CYAN}sudo modprobe uvcvideo${NC}             ${DIM}# re-enable camera${NC}"
+    echo ""
 
-                echo -e "${YELLOW}Enter the MAC address of the device to connect:${NC}"
-                read -p "MAC Address: " mac_addr
-                if [ -n "$mac_addr" ]; then
-                    echo ""
-                    msg "Pairing with $mac_addr..."
-                    bluetoothctl pair "$mac_addr"
-                    sleep 1
-
-                    msg "Trusting $mac_addr..."
-                    bluetoothctl trust "$mac_addr"
-                    sleep 1
-
-                    msg "Connecting to $mac_addr..."
-                    bluetoothctl connect "$mac_addr"
-                    sleep 2
-
-                    echo ""
-                    msg "Connection status:"
-                    bluetoothctl info "$mac_addr" | grep -E 'Name|Paired|Trusted|Connected|Icon'
-                    echo ""
-
-                    if bluetoothctl info "$mac_addr" | grep -q 'Connected: yes'; then
-                        success "🎉 Device connected successfully!"
-                    else
-                        warn "Device may not be connected. Check info above."
-                    fi
-                else
-                    warn "No MAC address entered. Aborted."
-                fi
-                ;;
-            13)
-                BT_RUNNING=false
-                msg "Returning to main menu..."
-                ;;
-            *)
-                warn "Invalid option."
-                ;;
-        esac
-    done
+    # ── System ──
+    echo -e "  ${BLUE}${BOLD}┌────────────────────────────────────────────────────────┐${NC}"
+    echo -e "  ${BLUE}${BOLD}│${NC}  ${BOLD}🖥  SYSTEM${NC}                                             ${BLUE}${BOLD}│${NC}"
+    echo -e "  ${BLUE}${BOLD}└────────────────────────────────────────────────────────┘${NC}"
+    echo -e "  ${CYAN}sudo pacman -Syu${NC}                   ${DIM}# full system update${NC}"
+    echo -e "  ${CYAN}pacman -Qs <package>${NC}              ${DIM}# search installed pkgs${NC}"
+    echo -e "  ${CYAN}pacman -Qi <package>${NC}              ${DIM}# package info${NC}"
+    echo -e "  ${CYAN}systemctl status <service>${NC}        ${DIM}# check service status${NC}"
+    echo -e "  ${CYAN}systemctl restart <service>${NC}       ${DIM}# restart a service${NC}"
+    echo -e "  ${CYAN}journalctl -xe${NC}                    ${DIM}# recent system logs${NC}"
+    echo -e "  ${CYAN}htop${NC}                               ${DIM}# process monitor${NC}"
+    echo -e "  ${CYAN}fc-list | grep <font>${NC}             ${DIM}# check installed fonts${NC}"
+    echo -e "  ${CYAN}xfce4-panel -r${NC}                    ${DIM}# restart XFCE panel${NC}"
+    echo ""
+    wait_step
 }
 
 # ==============================================================================
@@ -1177,7 +1097,8 @@ while true; do
         12) setup_webcam ;;
         13) install_vlc ;;
         14) install_bluetooth ;;
-        15) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
+        15) show_quick_reference ;;
+        16) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
         *) warn "Invalid option." ;;
     esac
     echo ""
