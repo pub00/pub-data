@@ -3,7 +3,7 @@
 # ==============================================================================
 # arch-forge - Post-Install Setup Forge for Arch Linux
 # Forges your fresh Arch into a battle-ready workstation.
-# Audio | AMD / NVIDIA Graphics | Fonts | Tools | Custom Managers
+# Audio | AMD / NVIDIA Graphics | Fonts | Tools | Bluetooth | Custom Managers
 # ==============================================================================
 
 # --- Colors & UI ---
@@ -162,10 +162,11 @@ show_menu() {
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
     echo -e "  ${CYAN}12)${NC} Setup Webcam (v4l-utils + guvcview)$(get_status "webcam")"
     echo -e "  ${CYAN}13)${NC} Install VLC Media Player (Hardware Accelerated)$(get_status "vlc")"
+    echo -e "  ${CYAN}14)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-    echo -e "  ${CYAN}14)${NC} Exit"
+    echo -e "  ${CYAN}15)${NC} Exit"
     echo ""
-    read -p "Select an option [1-14]: " opt
+    read -p "Select an option [1-15]: " opt
 }
 
 # ==============================================================================
@@ -905,6 +906,257 @@ install_vlc() {
 }
 
 # ==============================================================================
+# SECTION 14: BLUETOOTH SETUP (bluez + bluetoothctl)
+# ==============================================================================
+
+install_bluetooth() {
+    section_header "SECTION 14: BLUETOOTH SETUP (bluez + bluetoothctl)"
+
+    # --- Step 1: Check if bluez is already installed ---
+    msg "Step 1: Checking if Bluetooth stack is already installed"
+    brief "Querying locally installed packages for 'bluez'.
+       If already present, we skip installation."
+    echo ""
+
+    local BLUEZ_INSTALLED=false
+    if pacman -Qs bluez &>/dev/null; then
+        success "bluez packages are already installed:"
+        run_cmd "pacman -Qs bluez"
+        BLUEZ_INSTALLED=true
+    else
+        warn "bluez is NOT installed."
+    fi
+    wait_step
+
+    # --- Step 2: Install bluez & bluez-utils if needed ---
+    if [ "$BLUEZ_INSTALLED" = false ]; then
+        msg "Step 2: Installing Bluetooth packages (bluez + bluez-utils)"
+        brief "bluez = the official Linux Bluetooth protocol stack.
+           bluez-utils = provides bluetoothctl and other CLI tools."
+        echo ""
+        run_cmd "sudo pacman -S --noconfirm bluez bluez-utils"
+        check_success "bluez installation"
+        wait_step
+    else
+        msg "Step 2: Skipped — bluez already installed"
+        wait_step
+    fi
+
+    # --- Step 3: Enable & start bluetooth service ---
+    msg "Step 3: Enabling and starting bluetooth.service"
+    brief "This enables the systemd bluetooth service so it starts
+       automatically on every boot, and starts it immediately now."
+    echo ""
+    run_cmd "sudo systemctl enable --now bluetooth"
+    check_success "bluetooth.service"
+    wait_step
+
+    # --- Step 4: Verify service status ---
+    msg "Step 4: Verifying bluetooth.service status"
+    echo ""
+    run_cmd "systemctl status bluetooth --no-pager -l"
+    wait_step
+
+    mark_completed "bluetooth"
+    success "Bluetooth stack installed and service is running!"
+    echo ""
+
+    # --- Step 5: Interactive Bluetooth Management ---
+    echo -e "${YELLOW}${BOLD}Would you like to enter the Bluetooth Management menu?${NC}"
+    echo -e "${DIM}(Pair, connect, and manage Bluetooth devices)${NC}"
+    read -p "(y/n): " enter_bt_menu
+
+    if [[ "$enter_bt_menu" =~ ^[Yy]$ ]]; then
+        bluetooth_manager
+    fi
+}
+
+# --- Bluetooth Management Submenu ---
+bluetooth_manager() {
+    local BT_RUNNING=true
+
+    while $BT_RUNNING; do
+        echo ""
+        echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════════════${NC}"
+        echo -e "          ${BOLD}🔵 Bluetooth Manager${NC}"
+        echo -e "${BLUE}${BOLD}════════════════════════════════════════════════════════════${NC}"
+        echo ""
+        echo -e "  ${CYAN} 1)${NC} Power ON Bluetooth"
+        echo -e "  ${CYAN} 2)${NC} Power OFF Bluetooth"
+        echo -e "  ${CYAN} 3)${NC} Show Bluetooth Status (Powered?)"
+        echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+        echo -e "  ${CYAN} 4)${NC} Scan for Devices (discover nearby)"
+        echo -e "  ${CYAN} 5)${NC} List Known/Paired Devices"
+        echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+        echo -e "  ${CYAN} 6)${NC} Pair a Device"
+        echo -e "  ${CYAN} 7)${NC} Trust a Device"
+        echo -e "  ${CYAN} 8)${NC} Connect to a Device"
+        echo -e "  ${CYAN} 9)${NC} Disconnect a Device"
+        echo -e "  ${CYAN}10)${NC} Remove a Device (unpair)"
+        echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+        echo -e "  ${CYAN}11)${NC} Show Device Info"
+        echo -e "  ${CYAN}12)${NC} Full Auto-Connect (Scan → Pair → Trust → Connect)"
+        echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+        echo -e "  ${CYAN}13)${NC} Return to Main Menu"
+        echo ""
+        read -p "Select an option [1-13]: " bt_opt
+
+        case $bt_opt in
+            1)
+                msg "Powering ON Bluetooth..."
+                bluetoothctl power on
+                ;;
+            2)
+                msg "Powering OFF Bluetooth..."
+                bluetoothctl power off
+                ;;
+            3)
+                msg "Bluetooth Controller Status:"
+                bluetoothctl show
+                ;;
+            4)
+                msg "Scanning for nearby devices... (10 seconds)"
+                brief "Starting discovery. Nearby devices will appear below.
+                   Scan runs for 10 seconds then stops automatically."
+                echo ""
+                bluetoothctl power on &>/dev/null
+                bluetoothctl agent on &>/dev/null
+                bluetoothctl default-agent &>/dev/null
+                # Run scan in background, wait 10s, then stop
+                bluetoothctl --timeout 10 scan on
+                echo ""
+                success "Scan complete. Use option 6 to pair a device."
+                ;;
+            5)
+                msg "Known/Paired Devices:"
+                bluetoothctl devices
+                ;;
+            6)
+                msg "Pair a Device"
+                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
+                read -p "MAC Address: " mac_addr
+                if [ -n "$mac_addr" ]; then
+                    bluetoothctl pair "$mac_addr"
+                else
+                    warn "No MAC address entered."
+                fi
+                ;;
+            7)
+                msg "Trust a Device"
+                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
+                read -p "MAC Address: " mac_addr
+                if [ -n "$mac_addr" ]; then
+                    bluetoothctl trust "$mac_addr"
+                else
+                    warn "No MAC address entered."
+                fi
+                ;;
+            8)
+                msg "Connect to a Device"
+                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
+                read -p "MAC Address: " mac_addr
+                if [ -n "$mac_addr" ]; then
+                    bluetoothctl connect "$mac_addr"
+                else
+                    warn "No MAC address entered."
+                fi
+                ;;
+            9)
+                msg "Disconnect a Device"
+                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
+                read -p "MAC Address: " mac_addr
+                if [ -n "$mac_addr" ]; then
+                    bluetoothctl disconnect "$mac_addr"
+                else
+                    warn "No MAC address entered."
+                fi
+                ;;
+            10)
+                msg "Remove (Unpair) a Device"
+                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
+                read -p "MAC Address: " mac_addr
+                if [ -n "$mac_addr" ]; then
+                    echo -e "${YELLOW}Are you sure you want to remove $mac_addr? (y/n)${NC}"
+                    read -p ": " confirm_remove
+                    if [[ "$confirm_remove" =~ ^[Yy]$ ]]; then
+                        bluetoothctl remove "$mac_addr"
+                    fi
+                else
+                    warn "No MAC address entered."
+                fi
+                ;;
+            11)
+                msg "Device Info"
+                echo -e "${DIM}Enter the MAC address (e.g. AA:BB:CC:DD:EE:FF):${NC}"
+                read -p "MAC Address: " mac_addr
+                if [ -n "$mac_addr" ]; then
+                    bluetoothctl info "$mac_addr"
+                else
+                    warn "No MAC address entered."
+                fi
+                ;;
+            12)
+                msg "Full Auto-Connect Wizard"
+                brief "This will: Power ON → Scan (15s) → Show devices →
+                   Ask for MAC → Pair → Trust → Connect."
+                echo ""
+
+                # Power on & prepare agent
+                bluetoothctl power on
+                bluetoothctl agent on &>/dev/null
+                bluetoothctl default-agent &>/dev/null
+                echo ""
+
+                msg "Scanning for 15 seconds..."
+                bluetoothctl --timeout 15 scan on
+                echo ""
+
+                msg "Discovered devices:"
+                bluetoothctl devices
+                echo ""
+
+                echo -e "${YELLOW}Enter the MAC address of the device to connect:${NC}"
+                read -p "MAC Address: " mac_addr
+                if [ -n "$mac_addr" ]; then
+                    echo ""
+                    msg "Pairing with $mac_addr..."
+                    bluetoothctl pair "$mac_addr"
+                    sleep 1
+
+                    msg "Trusting $mac_addr..."
+                    bluetoothctl trust "$mac_addr"
+                    sleep 1
+
+                    msg "Connecting to $mac_addr..."
+                    bluetoothctl connect "$mac_addr"
+                    sleep 2
+
+                    echo ""
+                    msg "Connection status:"
+                    bluetoothctl info "$mac_addr" | grep -E 'Name|Paired|Trusted|Connected|Icon'
+                    echo ""
+
+                    if bluetoothctl info "$mac_addr" | grep -q 'Connected: yes'; then
+                        success "🎉 Device connected successfully!"
+                    else
+                        warn "Device may not be connected. Check info above."
+                    fi
+                else
+                    warn "No MAC address entered. Aborted."
+                fi
+                ;;
+            13)
+                BT_RUNNING=false
+                msg "Returning to main menu..."
+                ;;
+            *)
+                warn "Invalid option."
+                ;;
+        esac
+    done
+}
+
+# ==============================================================================
 # MAIN LOOP
 # ==============================================================================
 
@@ -924,7 +1176,8 @@ while true; do
         11) apply_arabic_font ;;
         12) setup_webcam ;;
         13) install_vlc ;;
-        14) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
+        14) install_bluetooth ;;
+        15) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
         *) warn "Invalid option." ;;
     esac
     echo ""
