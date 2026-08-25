@@ -163,11 +163,13 @@ show_menu() {
     echo -e "  ${CYAN}12)${NC} Setup Webcam (v4l-utils + guvcview)$(get_status "webcam")"
     echo -e "  ${CYAN}13)${NC} Install VLC Media Player (Hardware Accelerated)$(get_status "vlc")"
     echo -e "  ${CYAN}14)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
+    echo -e "  ${CYAN}15)${NC} Test Flash Drive (f3)$(get_status "f3_test")"
+    echo -e "  ${CYAN}16)${NC} Install Gaming Tools (Lutris, Wine, MangoHud)$(get_status "gaming")"
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-    echo -e "  ${YELLOW}15)${NC} Quick Reference (Useful Commands)"
-    echo -e "  ${CYAN}16)${NC} Exit"
+    echo -e "  ${YELLOW}17)${NC} Quick Reference (Useful Commands)"
+    echo -e "  ${CYAN}18)${NC} Exit"
     echo ""
-    read -p "Select an option [1-16]: " opt
+    read -p "Select an option [1-18]: " opt
 }
 
 # ==============================================================================
@@ -398,6 +400,9 @@ install_tools() {
     smart_install "firefox" "pacman"
     smart_install "inkscape" "pacman"
     smart_install "htop" "pacman"
+    smart_install "btop" "pacman"
+    smart_install "fastfetch" "pacman"
+    smart_install "dmidecode" "pacman"
     smart_install "obsidian" "pacman"
 
     # --- AUR Packages (yay) ---
@@ -907,44 +912,99 @@ install_vlc() {
 }
 
 # ==============================================================================
-# SECTION 14: BLUETOOTH SETUP (bluez + bluetoothctl)
+# SECTION 14: BLUETOOTH SETUP (Full Stack)
 # ==============================================================================
 
 install_bluetooth() {
-    section_header "SECTION 14: BLUETOOTH SETUP (bluez + bluetoothctl)"
+    section_header "SECTION 14: BLUETOOTH SETUP (Full Stack)"
 
-    # --- Step 1: Check if bluez is already installed ---
-    msg "Step 1: Checking if Bluetooth stack is already installed"
-    brief "Querying locally installed packages for 'bluez'.
-       If already present, we skip installation."
+    brief "This installs the complete Bluetooth stack for Arch Linux:
+       bluez          = Linux Bluetooth protocol stack (core)
+       bluez-utils    = CLI tools (bluetoothctl)
+       bluez-obex     = OBEX protocol for file transfer (separated since 2024)
+       blueman        = GTK Bluetooth manager (GUI for pairing, sending files)
+       xdg-user-dirs  = ensures ~/Downloads, ~/Documents etc. exist for transfers"
     echo ""
+    wait_step
 
-    local BLUEZ_INSTALLED=false
+    # --- Step 1: Check current state ---
+    msg "Step 1: Checking currently installed Bluetooth packages"
+    echo ""
     if pacman -Qs bluez &>/dev/null; then
-        success "bluez packages are already installed:"
+        success "Some Bluetooth packages are already installed:"
         run_cmd "pacman -Qs bluez"
-        BLUEZ_INSTALLED=true
     else
-        warn "bluez is NOT installed."
+        warn "No Bluetooth packages detected."
+    fi
+    if pacman -Qq blueman &>/dev/null 2>&1; then
+        success "blueman is already installed."
+    fi
+    if pacman -Qq xdg-user-dirs &>/dev/null 2>&1; then
+        success "xdg-user-dirs is already installed."
     fi
     wait_step
 
-    # --- Step 2: Install bluez & bluez-utils if needed ---
-    if [ "$BLUEZ_INSTALLED" = false ]; then
-        msg "Step 2: Installing Bluetooth packages (bluez + bluez-utils)"
-        brief "bluez = the official Linux Bluetooth protocol stack.
-           bluez-utils = provides bluetoothctl and other CLI tools."
-        echo ""
-        run_cmd "sudo pacman -S --noconfirm bluez bluez-utils"
-        check_success "bluez installation"
-        wait_step
+    # --- Step 2: Install core Bluetooth stack ---
+    msg "Step 2: Installing core Bluetooth stack (bluez + bluez-utils)"
+    brief "bluez = the official Linux Bluetooth protocol stack.
+       bluez-utils = provides bluetoothctl and other CLI tools."
+    echo ""
+    if pacman -Qq bluez &>/dev/null 2>&1 && pacman -Qq bluez-utils &>/dev/null 2>&1; then
+        success "bluez & bluez-utils are already installed. Skipping."
     else
-        msg "Step 2: Skipped — bluez already installed"
-        wait_step
+        run_cmd "sudo pacman -S --needed --noconfirm bluez bluez-utils"
+        check_success "bluez + bluez-utils installation"
     fi
+    wait_step
 
-    # --- Step 3: Enable & start bluetooth service ---
-    msg "Step 3: Enabling and starting bluetooth.service"
+    # --- Step 3: Install OBEX for file transfer ---
+    msg "Step 3: Installing OBEX file transfer support (bluez-obex)"
+    brief "Since 2024, Arch separated OBEX from the main bluez package.
+       Without bluez-obex, you CANNOT send/receive files via Bluetooth.
+       This is required for phone-to-PC file transfers."
+    echo ""
+    if pacman -Qq bluez-obex &>/dev/null 2>&1; then
+        success "bluez-obex is already installed. Skipping."
+    else
+        run_cmd "sudo pacman -S --needed --noconfirm bluez-obex"
+        check_success "bluez-obex installation"
+    fi
+    wait_step
+
+    # --- Step 4: Install Blueman (GUI manager) ---
+    msg "Step 4: Installing Blueman (GTK Bluetooth Manager)"
+    brief "blueman provides a graphical interface for:
+       - Pairing and connecting devices
+       - Sending/receiving files with drag-and-drop
+       - Managing trusted devices
+       - System tray applet for quick access"
+    echo ""
+    if pacman -Qq blueman &>/dev/null 2>&1; then
+        success "blueman is already installed. Skipping."
+    else
+        run_cmd "sudo pacman -S --needed --noconfirm blueman"
+        check_success "blueman installation"
+    fi
+    wait_step
+
+    # --- Step 5: Install xdg-user-dirs ---
+    msg "Step 5: Ensuring standard user directories exist (xdg-user-dirs)"
+    brief "xdg-user-dirs creates standard directories like ~/Downloads,
+       ~/Documents, ~/Pictures etc. These are needed so Bluetooth
+       file transfers have a proper destination folder."
+    echo ""
+    if pacman -Qq xdg-user-dirs &>/dev/null 2>&1; then
+        success "xdg-user-dirs is already installed."
+    else
+        run_cmd "sudo pacman -S --needed --noconfirm xdg-user-dirs"
+        check_success "xdg-user-dirs installation"
+    fi
+    run_cmd "xdg-user-dirs-update"
+    success "User directories are ready."
+    wait_step
+
+    # --- Step 6: Enable bluetooth.service (system) ---
+    msg "Step 6: Enabling bluetooth.service (system-wide)"
     brief "This enables the systemd bluetooth service so it starts
        automatically on every boot, and starts it immediately now."
     echo ""
@@ -952,34 +1012,48 @@ install_bluetooth() {
     check_success "bluetooth.service"
     wait_step
 
-    # --- Step 4: Verify service status ---
-    msg "Step 4: Verifying bluetooth.service status"
+    # --- Step 7: Enable obex.service (user) ---
+    msg "Step 7: Enabling obex.service (user session — for file transfers)"
+    brief "obex.service runs under your user session and handles
+       incoming/outgoing file transfers via Bluetooth OBEX protocol.
+       Without this, sending files from phone to PC will fail silently."
     echo ""
+    run_cmd "systemctl --user enable --now obex.service"
+    check_success "obex.service"
+    wait_step
+
+    # --- Step 8: Verify all services ---
+    msg "Step 8: Verifying all Bluetooth services"
+    echo ""
+    echo -e "  ${BOLD}bluetooth.service (system):${NC}"
     run_cmd "systemctl status bluetooth --no-pager -l"
+    echo ""
+    echo -e "  ${BOLD}obex.service (user):${NC}"
+    run_cmd "systemctl --user status obex.service --no-pager -l"
     wait_step
 
     mark_completed "bluetooth"
-    success "Bluetooth stack installed and service is running!"
+    success "Bluetooth full stack installed and all services are running!"
 
-    # --- Step 5: Bluetooth Command Reference ---
-    msg "Step 5: Bluetooth Quick Reference"
+    # --- Step 9: Command Reference ---
+    msg "Step 9: Bluetooth Quick Reference"
     echo ""
-    echo -e "  ${BOLD}Enter interactive mode:${NC}"
+    echo -e "  ${BOLD}Interactive mode:${NC}"
     echo -e "  ${CYAN}  bluetoothctl${NC}"
     echo ""
     echo -e "  ${BOLD}Power ON / OFF:${NC}"
     echo -e "  ${CYAN}  bluetoothctl power on${NC}"
     echo -e "  ${CYAN}  bluetoothctl power off${NC}"
     echo ""
-    echo -e "  ${BOLD}Check status:${NC}"
+    echo -e "  ${BOLD}Status:${NC}"
     echo -e "  ${CYAN}  bluetoothctl show${NC}            ${DIM}# Powered: yes/no${NC}"
     echo ""
-    echo -e "  ${BOLD}Scan, Pair & Connect a device:${NC}"
+    echo -e "  ${BOLD}Scan, Pair & Connect:${NC}"
     echo -e "  ${CYAN}  bluetoothctl scan on${NC}         ${DIM}# start scanning${NC}"
     echo -e "  ${CYAN}  bluetoothctl scan off${NC}        ${DIM}# stop scanning${NC}"
-    echo -e "  ${CYAN}  bluetoothctl pair XX:XX:XX:XX:XX:XX${NC}"
-    echo -e "  ${CYAN}  bluetoothctl trust XX:XX:XX:XX:XX:XX${NC}"
-    echo -e "  ${CYAN}  bluetoothctl connect XX:XX:XX:XX:XX:XX${NC}"
+    echo -e "  ${CYAN}  bluetoothctl pair XX:XX:..${NC}"
+    echo -e "  ${CYAN}  bluetoothctl trust XX:XX:..${NC}"
+    echo -e "  ${CYAN}  bluetoothctl connect XX:XX:..${NC}"
     echo ""
     echo -e "  ${BOLD}Manage devices:${NC}"
     echo -e "  ${CYAN}  bluetoothctl devices${NC}         ${DIM}# list known devices${NC}"
@@ -987,19 +1061,92 @@ install_bluetooth() {
     echo -e "  ${CYAN}  bluetoothctl disconnect XX:XX:..${NC}"
     echo -e "  ${CYAN}  bluetoothctl remove XX:XX:..${NC}  ${DIM}# unpair device${NC}"
     echo ""
-    echo -e "  ${BOLD}Service management:${NC}"
-    echo -e "  ${CYAN}  systemctl status bluetooth${NC}   ${DIM}# check service${NC}"
-    echo -e "  ${CYAN}  sudo systemctl restart bluetooth${NC}"
+    echo -e "  ${BOLD}File transfer (OBEX):${NC}"
+    echo -e "  ${CYAN}  bluetooth-sendto${NC}             ${DIM}# GUI send file dialog${NC}"
+    echo -e "  ${CYAN}  blueman-manager${NC}              ${DIM}# full GUI manager${NC}"
+    echo -e "  ${CYAN}  blueman-sendto${NC}               ${DIM}# send file via Blueman${NC}"
     echo ""
-    echo -e "  ${YELLOW}TIP:${NC} ${DIM}You can also view these commands anytime from the main menu → Quick Reference${NC}"
+    echo -e "  ${BOLD}Services:${NC}"
+    echo -e "  ${CYAN}  systemctl status bluetooth${NC}                  ${DIM}# core service${NC}"
+    echo -e "  ${CYAN}  systemctl --user status obex.service${NC}        ${DIM}# file transfer${NC}"
+    echo -e "  ${CYAN}  sudo systemctl restart bluetooth${NC}"
+    echo -e "  ${CYAN}  systemctl --user restart obex.service${NC}"
+    echo ""
+    echo -e "  ${YELLOW}TIP:${NC} ${DIM}View these commands anytime → Main Menu → Quick Reference${NC}"
     echo ""
     wait_step
 
-    success "Bluetooth setup complete! Use the commands above to manage your devices."
+    success "Bluetooth setup complete! Use 'blueman-manager' for GUI or 'bluetoothctl' for CLI."
 }
 
 # ==============================================================================
-# SECTION 15: QUICK REFERENCE (Useful Commands)
+# SECTION 15: TEST FLASH DRIVE (f3)
+# ==============================================================================
+
+test_flash_drive() {
+    section_header "SECTION 15: TEST FLASH DRIVE (f3)"
+
+    ensure_yay
+
+    msg "Step 1: Installing f3 (Fight Flash Fraud)"
+    if pacman -Qq f3 &>/dev/null 2>&1; then
+        success "f3 is already installed."
+    else
+        run_cmd "yay -S --noconfirm f3"
+        check_success "f3 installation"
+    fi
+    wait_step
+
+    msg "Step 2: How to use f3 tools"
+    echo ""
+    echo -e "  ${BOLD}To test a flash drive, follow these steps:${NC}"
+    echo -e "  ${RED}WARNING: f3probe completely destroys data! Make sure the drive is empty or backed up!${NC}"
+    echo ""
+    echo -e "  ${CYAN}1. Destructive probing (tests speed and capacity, DESTROYS DATA):${NC}"
+    echo -e "     ${BOLD}sudo f3probe --destructive /dev/sdX${NC}"
+    echo -e "     ${DIM}(Replace /dev/sdX with your actual block device, e.g., /dev/sdb)${NC}"
+    echo ""
+    echo -e "  ${CYAN}2. Write test data to the drive (requires mounted drive):${NC}"
+    echo -e "     ${BOLD}f3write /path/to/mountpoint${NC}"
+    echo -e "     ${DIM}(This will fill the drive with .h2w files to test actual capacity)${NC}"
+    echo ""
+    echo -e "  ${CYAN}3. Read and verify the test data:${NC}"
+    echo -e "     ${BOLD}f3read /path/to/mountpoint${NC}"
+    echo -e "     ${DIM}(This will verify the written files. If there are corrupted files, the drive is fake or failing)${NC}"
+    echo ""
+    wait_step
+
+    mark_completed "f3_test"
+}
+
+# ==============================================================================
+# SECTION 16: INSTALL GAMING TOOLS (Lutris, Wine, MangoHud)
+# ==============================================================================
+
+install_gaming_tools() {
+    section_header "SECTION 16: INSTALL GAMING TOOLS"
+
+    msg "Step 1: Installing Lutris, Wine, Winetricks, MangoHud"
+    run_cmd "sudo pacman -S --noconfirm lutris wine winetricks mangohud"
+    check_success "Gaming tools installation"
+    wait_step
+
+    msg "Step 2: Configuration Information"
+    echo ""
+    echo -e "  ${BOLD}To enable FPS counter MangoHud in your games (SYSTEM OPTIONS in configure of the game):${NC}"
+    echo -e "  ${CYAN}1. Open game configuration in Lutris/Steam${NC}"
+    echo -e "  ${CYAN}2. Go to System Options${NC}"
+    echo -e "  ${CYAN}3. Add the following Environment Variable:${NC}"
+    echo -e "     ${GREEN}MANGOHUD_CONFIG = fps_limit=60,no_display${NC}"
+    echo -e "  ${CYAN}4. Make sure 'FPS counter (MangoHud)' is enabled/toggled ON.${NC}"
+    echo ""
+    wait_step
+
+    mark_completed "gaming"
+}
+
+# ==============================================================================
+# SECTION 17: QUICK REFERENCE (Useful Commands)
 # ==============================================================================
 
 show_quick_reference() {
@@ -1021,6 +1168,14 @@ show_quick_reference() {
     echo -e "  ${CYAN}bluetoothctl disconnect XX:XX:..${NC}   ${DIM}# disconnect${NC}"
     echo -e "  ${CYAN}bluetoothctl info XX:XX:..${NC}         ${DIM}# device details${NC}"
     echo -e "  ${CYAN}bluetoothctl remove XX:XX:..${NC}       ${DIM}# unpair/forget${NC}"
+    echo -e "  ${MAGENTA}  ── File Transfer (OBEX) ──${NC}"
+    echo -e "  ${CYAN}blueman-manager${NC}                    ${DIM}# full GUI manager${NC}"
+    echo -e "  ${CYAN}blueman-sendto${NC}                     ${DIM}# send file via GUI${NC}"
+    echo -e "  ${CYAN}bluetooth-sendto${NC}                   ${DIM}# GNOME send dialog${NC}"
+    echo -e "  ${MAGENTA}  ── Services ──${NC}"
+    echo -e "  ${CYAN}systemctl status bluetooth${NC}         ${DIM}# core BT service${NC}"
+    echo -e "  ${CYAN}systemctl --user status obex${NC}       ${DIM}# file transfer service${NC}"
+    echo -e "  ${CYAN}systemctl --user restart obex${NC}      ${DIM}# restart OBEX${NC}"
     echo ""
 
     # ── Audio ──
@@ -1097,8 +1252,10 @@ while true; do
         12) setup_webcam ;;
         13) install_vlc ;;
         14) install_bluetooth ;;
-        15) show_quick_reference ;;
-        16) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
+        15) test_flash_drive ;;
+        16) install_gaming_tools ;;
+        17) show_quick_reference ;;
+        18) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
         *) warn "Invalid option." ;;
     esac
     echo ""
