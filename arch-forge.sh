@@ -3,7 +3,7 @@
 # ==============================================================================
 # arch-forge - Post-Install Setup Forge for Arch Linux
 # Forges your fresh Arch into a battle-ready workstation.
-# Audio | AMD / NVIDIA Graphics | Fonts | Tools | Bluetooth | Custom Managers
+# Audio | GPU | Media | Virtualization | Desktop | Hardware | Tools | Gaming
 # ==============================================================================
 
 # --- Colors & UI ---
@@ -148,28 +148,68 @@ show_menu() {
     echo "          arch-forge :: Post-Install Setup Forge            "
     echo "============================================================"
     echo -e "${NC}"
-    echo -e "  ${CYAN}1)${NC} Install Audio (PipeWire + PulseAudio - Universal)$(get_status "audio")"
-    echo -e "  ${CYAN}2)${NC} Install AMD GPU Drivers (HP EliteBook 845 G9 / Radeon)$(get_status "amd_gpu")"
-    echo -e "  ${CYAN}3)${NC} Install NVIDIA GPU Driver (MSI GTX970M / Legacy NVIDIA)$(get_status "nvidia")"
-    echo -e "  ${CYAN}4)${NC} Download & Install Fonts (Arabic + Microsoft Fonts)$(get_status "fonts")"
-    echo -e "  ${CYAN}5)${NC} Install Useful Tools (Chrome, Firefox, Obsidian, etc.)$(get_status "tools")"
-    echo -e "  ${CYAN}6)${NC} Apply XFCE Desktop Settings (from GitHub)$(get_status "xfce")"
-    echo -e "  ${CYAN}7)${NC} Install Secure Manager (from pub00/pub-data)$(get_status "secure_manager")"
-    echo -e "  ${CYAN}8)${NC} Install G-Manager (from pub00/pub-data)$(get_status "g_manager")"
-    echo -e "  ${CYAN}9)${NC} Install Git Helper (from pub00/pub-data)$(get_status "git_helper")"
-    echo -e "  ${CYAN}10)${NC} Download Wallpapers (from GitHub bg/ folder)$(get_status "wallpapers")"
-    echo -e "  ${CYAN}11)${NC} Apply Arabic System Font (Noto Naskh Arabic)$(get_status "arabic_font")"
+
+    # ── Audio & Sound ──
+    echo -e "  ${BLUE}${BOLD}🔊 AUDIO & SOUND${NC}"
+    echo -e "  ${CYAN}1)${NC}  Install Audio (PipeWire + PulseAudio)$(get_status "audio")"
+    echo -e "  ${CYAN}2)${NC}  Audio Production (Audacity + EasyEffects)$(get_status "audio_production")"
+
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-    echo -e "  ${CYAN}12)${NC} Setup Webcam (v4l-utils + guvcview)$(get_status "webcam")"
-    echo -e "  ${CYAN}13)${NC} Install VLC Media Player (Hardware Accelerated)$(get_status "vlc")"
-    echo -e "  ${CYAN}14)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
-    echo -e "  ${CYAN}15)${NC} Test Flash Drive (f3)$(get_status "f3_test")"
-    echo -e "  ${CYAN}16)${NC} Install Gaming Tools (Lutris, Wine, MangoHud)$(get_status "gaming")"
+
+    # ── GPU & Display ──
+    echo -e "  ${BLUE}${BOLD}🎮 GPU & DISPLAY DRIVERS${NC}"
+    echo -e "  ${CYAN}3)${NC}  Install AMD GPU Drivers (Radeon / Vulkan)$(get_status "amd_gpu")"
+    echo -e "  ${CYAN}4)${NC}  Install NVIDIA GPU Driver (GTX970M / Legacy)$(get_status "nvidia")"
+
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-    echo -e "  ${YELLOW}17)${NC} Quick Reference (Useful Commands)"
-    echo -e "  ${CYAN}18)${NC} Exit"
+
+    # ── Media & Production ──
+    echo -e "  ${BLUE}${BOLD}🎬 MEDIA & PRODUCTION${NC}"
+    echo -e "  ${CYAN}5)${NC}  Install VLC Media Player (Hardware Accelerated)$(get_status "vlc")"
+    echo -e "  ${CYAN}6)${NC}  Install OBS Studio (Recording & Streaming)$(get_status "obs_studio")"
+    echo -e "  ${CYAN}7)${NC}  Setup Webcam (v4l-utils + guvcview)$(get_status "webcam")"
+
+    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+
+    # ── Virtualization ──
+    echo -e "  ${BLUE}${BOLD}💻 VIRTUALIZATION${NC}"
+    echo -e "  ${CYAN}8)${NC}  Setup QEMU / KVM (virt-manager)$(get_status "qemu_kvm")"
+
+    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+
+    # ── Desktop & Customization ──
+    echo -e "  ${BLUE}${BOLD}🖥  DESKTOP & CUSTOMIZATION${NC}"
+    echo -e "  ${CYAN}9)${NC}  Apply XFCE Desktop Settings (from GitHub)$(get_status "xfce")"
+    echo -e "  ${CYAN}10)${NC} Apply Arabic System Font (Noto Naskh Arabic)$(get_status "arabic_font")"
+    echo -e "  ${CYAN}11)${NC} Download Wallpapers (from GitHub bg/ folder)$(get_status "wallpapers")"
+
+    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+
+    # ── Hardware & Devices ──
+    echo -e "  ${BLUE}${BOLD}🔌 HARDWARE & DEVICES${NC}"
+    echo -e "  ${CYAN}12)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
+    echo -e "  ${CYAN}13)${NC} Test Flash Drive (f3)$(get_status "f3_test")"
+
+    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+
+    # ── Custom Tools ──
+    echo -e "  ${BLUE}${BOLD}🛠  TOOLS & MANAGERS${NC}"
+    echo -e "  ${CYAN}14)${NC} Install Useful Tools (Chrome, Firefox, Obsidian, etc.)$(get_status "tools")"
+    echo -e "  ${CYAN}15)${NC} Install Secure Manager (from pub00/pub-data)$(get_status "secure_manager")"
+    echo -e "  ${CYAN}16)${NC} Install G-Manager (from pub00/pub-data)$(get_status "g_manager")"
+    echo -e "  ${CYAN}17)${NC} Install Git Helper (from pub00/pub-data)$(get_status "git_helper")"
+
+    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+
+    # ── Gaming ──
+    echo -e "  ${BLUE}${BOLD}🕹  GAMING${NC}"
+    echo -e "  ${CYAN}18)${NC} Install Gaming Tools (Lutris, Wine, MangoHud)$(get_status "gaming")"
+
+    echo -e "  ${MAGENTA}════════════════════════════════════════════${NC}"
+    echo -e "  ${YELLOW}19)${NC} Quick Reference (Useful Commands)"
+    echo -e "  ${RED}20)${NC} Exit"
     echo ""
-    read -p "Select an option [1-18]: " opt
+    read -p "Select an option [1-20]: " opt
 }
 
 # ==============================================================================
@@ -303,59 +343,7 @@ install_nvidia() {
     success "NVIDIA driver setup complete!"
 }
 
-# ==============================================================================
-# SECTION 4: FONTS (Arabic + Microsoft Fonts)
-# ==============================================================================
 
-install_fonts() {
-    section_header "SECTION 4: FONTS INSTALLATION (ARABIC + MICROSOFT)"
-
-    FONT_DIR="$HOME/.local/share/fonts"
-    REPO_BASE="https://raw.githubusercontent.com/pub00/pub-data/main/fonts"
-
-    FONTS=(
-        "ArefRuqaa-Bold.ttf"
-        "ArefRuqaa-Regular.ttf"
-        "Cairo-Black.ttf"
-        "Cairo-Bold.ttf"
-        "Cairo-ExtraBold.ttf"
-        "Cairo-ExtraLight.ttf"
-        "Cairo-Light.ttf"
-        "Cairo-Medium.ttf"
-        "Cairo-Regular.ttf"
-        "Cairo-SemiBold.ttf"
-        "NotoNaskhArabic-Bold.ttf"
-        "NotoNaskhArabic-Medium.ttf"
-        "NotoNaskhArabic-Regular.ttf"
-        "NotoNaskhArabic-SemiBold.ttf"
-    )
-
-    msg "Step 1: Preparing font directory (~/.local/share/fonts/)"
-    run_cmd "mkdir -p $FONT_DIR"
-    check_success "Font directory"
-    wait_step
-
-    msg "Step 2: Downloading fonts from GitHub"
-    for font in "${FONTS[@]}"; do
-        run_cmd "curl -fsSL -o \"$FONT_DIR/$font\" \"$REPO_BASE/$font\""
-    done
-    check_success "Font download"
-    wait_step
-
-    msg "Step 3: Rebuilding font cache"
-    run_cmd "fc-cache -fv"
-    check_success "Font cache rebuild"
-    wait_step
-
-    msg "Step 4: Installing Microsoft TrueType Core Fonts (AUR)"
-    ensure_yay
-    run_cmd "yay -S ttf-ms-fonts"
-    check_success "Microsoft core fonts installation"
-    wait_step
-
-    mark_completed "fonts"
-    success "Fonts installed! Arabic fonts and Microsoft TrueType fonts are ready."
-}
 
 # ==============================================================================
 # SECTION 5: USEFUL TOOLS
@@ -664,7 +652,7 @@ apply_arabic_font() {
 
     msg "Step 1: Checking if 'Noto Naskh Arabic' is installed"
     if ! fc-list | grep -iq "Noto Naskh Arabic"; then
-        error "Font 'Noto Naskh Arabic' is not installed! Please run Option 4 (Fonts) first."
+        error "Font 'Noto Naskh Arabic' is not installed! Install it with: sudo pacman -S noto-fonts noto-fonts-extra"
         return 1
     fi
     success "Font found."
@@ -1146,7 +1134,188 @@ install_gaming_tools() {
 }
 
 # ==============================================================================
-# SECTION 17: QUICK REFERENCE (Useful Commands)
+# SECTION 17: QEMU / KVM VIRTUALIZATION SETUP
+# ==============================================================================
+
+install_qemu_kvm() {
+    section_header "SECTION 17: QEMU / KVM VIRTUALIZATION SETUP"
+
+    # --- Step 1: System update ---
+    msg "Step 1: Updating the system"
+    brief "Ensuring all packages are up-to-date before installing virtualization tools."
+    echo ""
+    run_cmd "sudo pacman -Syu --noconfirm"
+    check_success "System update"
+    wait_step
+
+    # --- Step 2: Install virtualization packages ---
+    msg "Step 2: Installing QEMU, libvirt, and virt-manager"
+    brief "qemu-desktop     = Main QEMU virtualization package.
+       libvirt          = Virtualization management daemon.
+       virt-manager     = GUI manager for virtual machines.
+       dnsmasq          = Provides DHCP/NAT networking for VMs.
+       iptables-nft     = Firewall backend required by libvirt networking.
+       dmidecode        = Lets guests read hardware/system information."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm qemu-desktop libvirt virt-manager dnsmasq iptables-nft dmidecode"
+    check_success "Virtualization packages installation"
+    wait_step
+
+    # --- Step 3: Add user to libvirt group ---
+    msg "Step 3: Adding your user to the libvirt group"
+    brief "Allows your user account to manage virtual machines
+       without using root every time."
+    echo ""
+    run_cmd "sudo usermod -aG libvirt $USER"
+    check_success "User added to libvirt group"
+    wait_step
+
+    # --- Step 4: Enable and start libvirtd ---
+    msg "Step 4: Enabling and starting libvirtd service"
+    brief "Starts the virtualization daemon now and automatically on boot."
+    echo ""
+    run_cmd "sudo systemctl enable --now libvirtd.service"
+    check_success "libvirtd service"
+    wait_step
+
+    # --- Step 5: REBOOT WARNING ---
+    msg "Step 5: IMPORTANT — Reboot Required!"
+    echo ""
+    echo -e "  ${RED}${BOLD}╔══════════════════════════════════════════════════════════╗${NC}"
+    echo -e "  ${RED}${BOLD}║  ⚠  YOU MUST REBOOT BEFORE CONTINUING TO STEP 6!       ║${NC}"
+    echo -e "  ${RED}${BOLD}║                                                          ║${NC}"
+    echo -e "  ${RED}${BOLD}║  Your user is NOT yet part of the libvirt group.         ║${NC}"
+    echo -e "  ${RED}${BOLD}║  Without rebooting, 'virsh net-start default' will FAIL  ║${NC}"
+    echo -e "  ${RED}${BOLD}║  with: 'Unable to create bridge virbr0'                 ║${NC}"
+    echo -e "  ${RED}${BOLD}╚══════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "  ${YELLOW}After rebooting, run arch-forge again and select this option.${NC}"
+    echo -e "  ${YELLOW}It will detect the reboot and continue from Step 6 automatically.${NC}"
+    echo ""
+
+    # Check if user is already in the libvirt group (post-reboot)
+    if id -nG "$USER" | grep -qw "libvirt"; then
+        success "User is already in the libvirt group. Continuing..."
+    else
+        warn "Reboot now, then re-run this option to finish setup."
+        echo ""
+        read -p "Do you want to reboot now? (y/n): " reboot_choice
+        if [[ "$reboot_choice" =~ ^[Yy]$ ]]; then
+            reboot
+        fi
+        return 0
+    fi
+    wait_step
+
+    # --- Step 6: Start the default virtual network ---
+    msg "Step 6: Starting the default virtual network"
+    brief "Creates the default NAT network for virtual machines.
+       VMs will get internet access through your host machine."
+    echo ""
+    run_cmd "sudo virsh net-start default"
+    check_success "Default network start"
+    wait_step
+
+    # --- Step 7: Enable autostart for the network ---
+    msg "Step 7: Enabling autostart for the default network"
+    brief "Automatically starts the default VM network after every reboot."
+    echo ""
+    run_cmd "sudo virsh net-autostart default"
+    check_success "Network autostart"
+    wait_step
+
+    mark_completed "qemu_kvm"
+    success "QEMU/KVM virtualization is fully configured!"
+    echo ""
+    echo -e "  ${BOLD}Launch Virtual Machine Manager:${NC}"
+    echo -e "  ${CYAN}  virt-manager${NC}"
+    echo ""
+    echo -e "  ${BOLD}List running VMs:${NC}"
+    echo -e "  ${CYAN}  virsh list --all${NC}"
+    echo ""
+    echo -e "  ${BOLD}Check network status:${NC}"
+    echo -e "  ${CYAN}  virsh net-list --all${NC}"
+    echo ""
+    wait_step
+}
+
+# ==============================================================================
+# SECTION 18: OBS STUDIO (Screen Recording & Streaming)
+# ==============================================================================
+
+install_obs_studio() {
+    section_header "SECTION 18: OBS STUDIO INSTALLATION"
+
+    # --- Step 1: System update ---
+    msg "Step 1: Updating the system"
+    run_cmd "sudo pacman -Syu --noconfirm"
+    check_success "System update"
+    wait_step
+
+    # --- Step 2: Install OBS Studio ---
+    msg "Step 2: Installing OBS Studio"
+    brief "OBS Studio is a free and open-source software for video recording
+       and live streaming. Supports screen capture, webcam, and audio mixing."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm obs-studio"
+    check_success "OBS Studio installation"
+    wait_step
+
+    mark_completed "obs_studio"
+    success "OBS Studio installed successfully!"
+    echo ""
+    echo -e "  ${BOLD}Launch OBS Studio:${NC}"
+    echo -e "  ${CYAN}  obs${NC}"
+    echo ""
+    wait_step
+}
+
+# ==============================================================================
+# SECTION 19: AUDIO PRODUCTION (Audacity + EasyEffects)
+# ==============================================================================
+
+install_audio_production() {
+    section_header "SECTION 19: AUDIO PRODUCTION TOOLS"
+
+    # --- Step 1: System update ---
+    msg "Step 1: Updating the system"
+    run_cmd "sudo pacman -Syu --noconfirm"
+    check_success "System update"
+    wait_step
+
+    # --- Step 2: Install Audacity ---
+    msg "Step 2: Installing Audacity"
+    brief "Audacity is a free, open-source audio editor and recorder.
+       Supports multi-track editing, effects, noise reduction, and more."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm audacity"
+    check_success "Audacity installation"
+    wait_step
+
+    # --- Step 3: Install EasyEffects ---
+    msg "Step 3: Installing EasyEffects"
+    brief "EasyEffects is a PipeWire-based audio effects tool.
+       Provides equalizer, compressor, noise gate, echo canceller,
+       and many other real-time audio effects for your microphone and speakers."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm easyeffects"
+    check_success "EasyEffects installation"
+    wait_step
+
+    mark_completed "audio_production"
+    success "Audio production tools installed!"
+    echo ""
+    echo -e "  ${BOLD}Launch Audacity:${NC}"
+    echo -e "  ${CYAN}  audacity${NC}"
+    echo ""
+    echo -e "  ${BOLD}Launch EasyEffects:${NC}"
+    echo -e "  ${CYAN}  easyeffects${NC}"
+    echo ""
+    wait_step
+}
+
+# ==============================================================================
+# SECTION 20: QUICK REFERENCE (Useful Commands)
 # ==============================================================================
 
 show_quick_reference() {
@@ -1238,24 +1407,35 @@ show_quick_reference() {
 while true; do
     show_menu
     case $opt in
+        # 🔊 Audio & Sound
         1) install_audio ;;
-        2) install_amd_gpu ;;
-        3) install_nvidia ;;
-        4) install_fonts ;;
-        5) install_tools ;;
-        6) apply_xfce_configs ;;
-        7) install_secure_manager ;;
-        8) install_g_manager ;;
-        9) install_git_helper ;;
-        10) download_wallpapers ;;
-        11) apply_arabic_font ;;
-        12) setup_webcam ;;
-        13) install_vlc ;;
-        14) install_bluetooth ;;
-        15) test_flash_drive ;;
-        16) install_gaming_tools ;;
-        17) show_quick_reference ;;
-        18) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
+        2) install_audio_production ;;
+        # 🎮 GPU & Display
+        3) install_amd_gpu ;;
+        4) install_nvidia ;;
+        # 🎬 Media & Production
+        5) install_vlc ;;
+        6) install_obs_studio ;;
+        7) setup_webcam ;;
+        # 💻 Virtualization
+        8) install_qemu_kvm ;;
+        # 🖥 Desktop & Customization
+        9) apply_xfce_configs ;;
+        10) apply_arabic_font ;;
+        11) download_wallpapers ;;
+        # 🔌 Hardware & Devices
+        12) install_bluetooth ;;
+        13) test_flash_drive ;;
+        # 🛠 Tools & Managers
+        14) install_tools ;;
+        15) install_secure_manager ;;
+        16) install_g_manager ;;
+        17) install_git_helper ;;
+        # 🕹 Gaming
+        18) install_gaming_tools ;;
+        # ───
+        19) show_quick_reference ;;
+        20) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
         *) warn "Invalid option." ;;
     esac
     echo ""
