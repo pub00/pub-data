@@ -385,6 +385,7 @@ install_tools() {
     # --- Official Repositories (pacman) ---
     smart_install "unzip" "pacman"
     smart_install "xarchiver" "pacman"
+    smart_install "7zip" "pacman"
     smart_install "firefox" "pacman"
     smart_install "inkscape" "pacman"
     smart_install "htop" "pacman"
