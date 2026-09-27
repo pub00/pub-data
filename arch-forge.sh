@@ -386,6 +386,7 @@ install_tools() {
     smart_install "unzip" "pacman"
     smart_install "xarchiver" "pacman"
     smart_install "7zip" "pacman"
+    smart_install "libheif" "pacman"
     smart_install "firefox" "pacman"
     smart_install "inkscape" "pacman"
     smart_install "htop" "pacman"
@@ -1301,6 +1302,24 @@ install_audio_production() {
     echo ""
     run_cmd "sudo pacman -S --noconfirm easyeffects"
     check_success "EasyEffects installation"
+    wait_step
+
+    # --- Step 4: Install LSP Plugins ---
+    msg "Step 4: Installing LSP Plugins"
+    brief "LSP Plugins provide a rich set of audio processing plugins,
+       including parametric equalizer, compressor, limiter, and more."
+    echo ""
+    run_cmd "sudo pacman -S --noconfirm lsp-plugins"
+    check_success "LSP Plugins installation"
+    wait_step
+
+    # --- Step 5: Install DeepFilterNet ---
+    msg "Step 5: Installing DeepFilterNet"
+    brief "DeepFilterNet is a deep learning-based noise suppression filter.
+       Provides real-time deep noise removal for microphone input."
+    echo ""
+    run_cmd "yay -S --noconfirm deepfilternet-plus-bin"
+    check_success "DeepFilterNet installation"
     wait_step
 
     mark_completed "audio_production"
