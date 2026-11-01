@@ -149,67 +149,68 @@ show_menu() {
     echo "============================================================"
     echo -e "${NC}"
 
+    # ── Custom Tools (FIRST — YAY is needed by other sections) ──
+    echo -e "  ${BLUE}${BOLD}🛠  TOOLS & MANAGERS${NC}"
+    echo -e "  ${CYAN}1)${NC}  Install Useful Tools (Chrome, Firefox, Obsidian, etc.)$(get_status "tools")"
+    echo -e "  ${CYAN}2)${NC}  Install Secure Manager (from pub00/pub-data)$(get_status "secure_manager")"
+    echo -e "  ${CYAN}3)${NC}  Install G-Manager (from pub00/pub-data)$(get_status "g_manager")"
+    echo -e "  ${CYAN}4)${NC}  Install Git Helper (from pub00/pub-data)$(get_status "git_helper")"
+
+    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
+
     # ── Audio & Sound ──
     echo -e "  ${BLUE}${BOLD}🔊 AUDIO & SOUND${NC}"
-    echo -e "  ${CYAN}1)${NC}  Install Audio (PipeWire + PulseAudio)$(get_status "audio")"
-    echo -e "  ${CYAN}2)${NC}  Audio Production (Audacity + EasyEffects)$(get_status "audio_production")"
+    echo -e "  ${CYAN}5)${NC}  Install Audio (PipeWire + PulseAudio)$(get_status "audio")"
+    echo -e "  ${CYAN}6)${NC}  Audio Production (Audacity + EasyEffects)$(get_status "audio_production")"
 
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
 
     # ── GPU & Display ──
     echo -e "  ${BLUE}${BOLD}🎮 GPU & DISPLAY DRIVERS${NC}"
-    echo -e "  ${CYAN}3)${NC}  Install AMD GPU Drivers (Radeon / Vulkan)$(get_status "amd_gpu")"
-    echo -e "  ${CYAN}4)${NC}  Install NVIDIA GPU Driver (GTX970M / Legacy)$(get_status "nvidia")"
+    echo -e "  ${CYAN}7)${NC}  Install AMD GPU Drivers (Radeon / Vulkan)$(get_status "amd_gpu")"
+    echo -e "  ${CYAN}8)${NC}  Install NVIDIA GPU Driver (GTX970M / Legacy)$(get_status "nvidia")"
 
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
 
     # ── Media & Production ──
     echo -e "  ${BLUE}${BOLD}🎬 MEDIA & PRODUCTION${NC}"
-    echo -e "  ${CYAN}5)${NC}  Install VLC Media Player (Hardware Accelerated)$(get_status "vlc")"
-    echo -e "  ${CYAN}6)${NC}  Install OBS Studio (Recording & Streaming)$(get_status "obs_studio")"
-    echo -e "  ${CYAN}7)${NC}  Setup Webcam (v4l-utils + guvcview)$(get_status "webcam")"
+    echo -e "  ${CYAN}9)${NC}  Install VLC Media Player (Hardware Accelerated)$(get_status "vlc")"
+    echo -e "  ${CYAN}10)${NC} Install OBS Studio (Recording & Streaming)$(get_status "obs_studio")"
+    echo -e "  ${CYAN}11)${NC} Setup Webcam (v4l-utils + guvcview)$(get_status "webcam")"
 
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
 
     # ── Virtualization ──
     echo -e "  ${BLUE}${BOLD}💻 VIRTUALIZATION${NC}"
-    echo -e "  ${CYAN}8)${NC}  Setup QEMU / KVM (virt-manager)$(get_status "qemu_kvm")"
+    echo -e "  ${CYAN}12)${NC} Setup QEMU / KVM (virt-manager)$(get_status "qemu_kvm")"
 
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
 
     # ── Desktop & Customization ──
     echo -e "  ${BLUE}${BOLD}🖥  DESKTOP & CUSTOMIZATION${NC}"
-    echo -e "  ${CYAN}9)${NC}  Apply XFCE Desktop Settings (from GitHub)$(get_status "xfce")"
-    echo -e "  ${CYAN}10)${NC} Apply Arabic System Font (Noto Naskh Arabic)$(get_status "arabic_font")"
-    echo -e "  ${CYAN}11)${NC} Download Wallpapers (from GitHub bg/ folder)$(get_status "wallpapers")"
+    echo -e "  ${CYAN}13)${NC} Apply XFCE Desktop Settings (from GitHub)$(get_status "xfce")"
+    echo -e "  ${CYAN}14)${NC} Apply Arabic System Font (Noto Naskh Arabic)$(get_status "arabic_font")"
+    echo -e "  ${CYAN}15)${NC} Download Wallpapers (from GitHub bg/ folder)$(get_status "wallpapers")"
 
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
 
     # ── Hardware & Devices ──
     echo -e "  ${BLUE}${BOLD}🔌 HARDWARE & DEVICES${NC}"
-    echo -e "  ${CYAN}12)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
-    echo -e "  ${CYAN}13)${NC} Test Flash Drive (f3)$(get_status "f3_test")"
-
-    echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
-
-    # ── Custom Tools ──
-    echo -e "  ${BLUE}${BOLD}🛠  TOOLS & MANAGERS${NC}"
-    echo -e "  ${CYAN}14)${NC} Install Useful Tools (Chrome, Firefox, Obsidian, etc.)$(get_status "tools")"
-    echo -e "  ${CYAN}15)${NC} Install Secure Manager (from pub00/pub-data)$(get_status "secure_manager")"
-    echo -e "  ${CYAN}16)${NC} Install G-Manager (from pub00/pub-data)$(get_status "g_manager")"
-    echo -e "  ${CYAN}17)${NC} Install Git Helper (from pub00/pub-data)$(get_status "git_helper")"
+    echo -e "  ${CYAN}16)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
+    echo -e "  ${CYAN}17)${NC} Test Flash Drive (f3)$(get_status "f3_test")"
+    echo -e "  ${CYAN}18)${NC} Setup MTP Phone Connection (libmtp + gvfs-mtp)$(get_status "mtp_phone")"
 
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
 
     # ── Gaming ──
     echo -e "  ${BLUE}${BOLD}🕹  GAMING${NC}"
-    echo -e "  ${CYAN}18)${NC} Install Gaming Tools (Lutris, Wine, MangoHud)$(get_status "gaming")"
+    echo -e "  ${CYAN}19)${NC} Install Gaming Tools (Lutris, Wine, MangoHud)$(get_status "gaming")"
 
     echo -e "  ${MAGENTA}════════════════════════════════════════════${NC}"
-    echo -e "  ${YELLOW}19)${NC} Quick Reference (Useful Commands)"
-    echo -e "  ${RED}20)${NC} Exit"
+    echo -e "  ${YELLOW}20)${NC} Quick Reference (Useful Commands)"
+    echo -e "  ${RED}21)${NC} Exit"
     echo ""
-    read -p "Select an option [1-20]: " opt
+    read -p "Select an option [1-21]: " opt
 }
 
 # ==============================================================================
@@ -427,7 +428,19 @@ apply_xfce_configs() {
     check_success "Repository download"
     wait_step
 
-    msg "Step 2: Applying XFCE configurations"
+    msg "Step 2: Stopping xfconfd (to prevent overwrite on logout)"
+    brief "xfconfd keeps XFCE settings in memory and writes them back on logout.
+       If we copy new config files while it's running, it will overwrite them
+       with the old settings when you log out. We must kill it first."
+    echo ""
+    if pkill -f xfconfd 2>/dev/null; then
+        success "xfconfd stopped successfully."
+    else
+        warn "xfconfd was not running (this is fine if you're not in a desktop session)."
+    fi
+    wait_step
+
+    msg "Step 3: Applying XFCE configurations"
     brief "Copying the entire xfce4 folder to ~/.config/xfce4/ (User Permissions)"
     
     # Ensure destination exists
@@ -443,14 +456,30 @@ apply_xfce_configs() {
     fi
     wait_step
 
-    msg "Step 3: Cleaning up temporary files"
+    msg "Step 4: Cleaning up temporary files"
     run_cmd "rm -rf $TMP_DIR"
 
-    msg "Step 4: Reminder to restart/reload XFCE Desktop"
-    warn "CRITICAL REMINDER: You MUST restart your XFCE session (log out & log back in, or reboot)"
-    warn "for all these configurations to take effect!"
-    echo -e "${YELLOW}>> Pro-Tip: You can restart the panel immediately without logging out by running:${NC}"
-    echo -e "   ${BOLD}xfce4-panel -r${NC}"
+    msg "Step 5: Restarting xfconfd and XFCE panel"
+    brief "Restarting xfconfd so it loads the NEW config files from disk.
+       Also restarting the panel to apply panel layout changes immediately."
+    echo ""
+    # xfconfd will auto-restart when XFCE needs it, but we can trigger it
+    if command -v xfconfd &>/dev/null; then
+        run_cmd "xfconfd &"
+        success "xfconfd restarted with new configurations."
+    fi
+    # Restart the panel to apply layout changes
+    if command -v xfce4-panel &>/dev/null; then
+        run_cmd "xfce4-panel -r"
+        success "Panel restarted."
+    fi
+    wait_step
+
+    msg "Step 6: Final Notes"
+    warn "For FULL effect (window manager theme, desktop icons, etc.):"
+    warn "Log out and log back in, or reboot."
+    echo -e "${YELLOW}>> The panel and most settings should already be applied.${NC}"
+    echo -e "${YELLOW}>> If anything looks wrong, a simple reboot will fix it.${NC}"
     wait_step
 
     mark_completed "xfce"
@@ -1110,6 +1139,84 @@ test_flash_drive() {
 }
 
 # ==============================================================================
+# SECTION 15.5: SETUP MTP PHONE CONNECTION (libmtp + gvfs-mtp)
+# ==============================================================================
+
+setup_mtp_phone() {
+    section_header "SETUP MTP PHONE CONNECTION"
+
+    brief "This sets up MTP (Media Transfer Protocol) support for connecting
+       Android phones (Samsung, etc.) to Arch Linux via USB cable.
+       Without these packages, your phone will only charge — no file access.
+
+       libmtp    = Core MTP library — enables the system to detect MTP devices.
+                   After installing, 'mtp-detect' will prompt your phone
+                   to ask if you want to share data.
+       gvfs-mtp  = GVFS backend for MTP — enables file managers (Thunar, etc.)
+                   and 'gio' commands to browse phone storage.
+
+       After installation you can:
+         • mtp-detect           → detect connected MTP devices
+         • gio mount -li        → list all mounted resources (MTP, drives, etc.)
+         • gio mount \"mtp://...\" → mount phone storage
+         • thunar /run/user/\$(id -u)/gvfs → browse phone files
+
+       Note: In recent XFCE4 updates, Thunar shows connected phones
+       directly in the sidebar (alongside Trash, Computer, etc.)
+       so manual mounting may no longer be needed."
+    echo ""
+    wait_step
+
+    # --- Step 1: System update ---
+    msg "Step 1: Updating the system"
+    run_cmd "sudo pacman -Syu --noconfirm"
+    check_success "System update"
+    wait_step
+
+    # --- Step 2: Install libmtp ---
+    msg "Step 2: Installing libmtp (MTP device support)"
+    brief "libmtp provides the core MTP library and tools like mtp-detect.
+       Once installed, connecting your phone via USB will trigger a
+       'Share data?' prompt on the phone instead of just charging."
+    echo ""
+    if pacman -Qq libmtp &>/dev/null 2>&1; then
+        success "libmtp is already installed. Skipping."
+    else
+        run_cmd "sudo pacman -S --noconfirm libmtp"
+        check_success "libmtp installation"
+    fi
+    wait_step
+
+    # --- Step 3: Install gvfs-mtp ---
+    msg "Step 3: Installing gvfs-mtp (GIO/GVFS MTP backend)"
+    brief "gvfs-mtp enables file managers and gio commands to access MTP devices.
+       Without it, 'gio mount -li' will not show any MTP sources,
+       and Thunar cannot browse your phone's storage."
+    echo ""
+    if pacman -Qq gvfs-mtp &>/dev/null 2>&1; then
+        success "gvfs-mtp is already installed. Skipping."
+    else
+        run_cmd "sudo pacman -S --noconfirm gvfs-mtp"
+        check_success "gvfs-mtp installation"
+    fi
+    wait_step
+
+    mark_completed "mtp_phone"
+    success "MTP Phone Connection setup complete!"
+    echo ""
+    echo -e "  ${BOLD}Useful commands:${NC}"
+    echo -e "  ${CYAN}  mtp-detect${NC}                         → Detect connected MTP devices"
+    echo -e "  ${CYAN}  gio mount -li${NC}                      → List all mounted resources"
+    echo -e "  ${CYAN}  gio mount \"mtp://...\"${NC}              → Mount phone storage"
+    echo -e "  ${CYAN}  thunar /run/user/\$(id -u)/gvfs${NC}     → Browse phone files"
+    echo ""
+    echo -e "  ${YELLOW}TIP:${NC} In latest XFCE4/Thunar, your phone may appear"
+    echo -e "       directly in the sidebar — no manual mount needed!"
+    echo ""
+    wait_step
+}
+
+# ==============================================================================
 # SECTION 16: INSTALL GAMING TOOLS (Lutris, Wine, MangoHud)
 # ==============================================================================
 
@@ -1427,35 +1534,36 @@ show_quick_reference() {
 while true; do
     show_menu
     case $opt in
+        # 🛠 Tools & Managers (FIRST — installs YAY needed by others)
+        1) install_tools ;;
+        2) install_secure_manager ;;
+        3) install_g_manager ;;
+        4) install_git_helper ;;
         # 🔊 Audio & Sound
-        1) install_audio ;;
-        2) install_audio_production ;;
+        5) install_audio ;;
+        6) install_audio_production ;;
         # 🎮 GPU & Display
-        3) install_amd_gpu ;;
-        4) install_nvidia ;;
+        7) install_amd_gpu ;;
+        8) install_nvidia ;;
         # 🎬 Media & Production
-        5) install_vlc ;;
-        6) install_obs_studio ;;
-        7) setup_webcam ;;
+        9) install_vlc ;;
+        10) install_obs_studio ;;
+        11) setup_webcam ;;
         # 💻 Virtualization
-        8) install_qemu_kvm ;;
+        12) install_qemu_kvm ;;
         # 🖥 Desktop & Customization
-        9) apply_xfce_configs ;;
-        10) apply_arabic_font ;;
-        11) download_wallpapers ;;
+        13) apply_xfce_configs ;;
+        14) apply_arabic_font ;;
+        15) download_wallpapers ;;
         # 🔌 Hardware & Devices
-        12) install_bluetooth ;;
-        13) test_flash_drive ;;
-        # 🛠 Tools & Managers
-        14) install_tools ;;
-        15) install_secure_manager ;;
-        16) install_g_manager ;;
-        17) install_git_helper ;;
+        16) install_bluetooth ;;
+        17) test_flash_drive ;;
+        18) setup_mtp_phone ;;
         # 🕹 Gaming
-        18) install_gaming_tools ;;
+        19) install_gaming_tools ;;
         # ───
-        19) show_quick_reference ;;
-        20) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
+        20) show_quick_reference ;;
+        21) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
         *) warn "Invalid option." ;;
     esac
     echo ""
