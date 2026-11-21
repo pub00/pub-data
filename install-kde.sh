@@ -286,8 +286,8 @@ else
         DEF_EFI="/dev/${TARGET_DEV}p1"
         DEF_ROOT="/dev/${TARGET_DEV}p2"
     else
-        DEF_EFI="/dev/${TARGET_DEV}p1"
-        DEF_ROOT="/dev/${TARGET_DEV}p2"
+        DEF_EFI="/dev/${TARGET_DEV}1"
+        DEF_ROOT="/dev/${TARGET_DEV}2"
     fi
 
     echo -e "\n${BOLD}Is this a dual-boot installation (using an existing EFI partition)?${NC}"
@@ -432,8 +432,16 @@ warn "I am about to install the base system packages (base, linux, firmware, btr
 echo -e "${YELLOW}This will generate a lot of output and may fill your screen.${NC}"
 wait_step
 
+# Optimize pacman download speed (5 parallel downloads + color)
+run_cmd "sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf"
+run_cmd "sed -i 's/^#Color/Color/' /etc/pacman.conf"
+
 run_cmd "pacstrap -K /mnt base linux linux-firmware btrfs-progs cryptsetup grub efibootmgr nano networkmanager snapper dkms"
 check_success "Pacstrap"
+
+# Apply parallel downloads to target system pacman as well
+run_cmd "sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /mnt/etc/pacman.conf"
+run_cmd "sed -i 's/^#Color/Color/' /mnt/etc/pacman.conf"
 
 # --- FSTAB Preview ---
 preview_file "/mnt/etc/fstab" "FSTAB (File System Table)" "This file tells the system where to mount your partitions during boot. We use UUIDs to ensure accuracy even if drive letters change."
@@ -825,9 +833,9 @@ run_cmd "echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub"
 
 # 6b. Set Kernel CMDLINE (With Hibernate resume parameter if Swapfile exists)
 if [[ -n "$RESUME_OFFSET" ]]; then
-    run_cmd "sed -i 's|GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"rd.luks.name=$LUKS_UUID=cryptroot root=/dev/mapper/cryptroot resume=/dev/mapper/cryptroot resume_offset=$RESUME_OFFSET rw |' /etc/default/grub"
+    run_cmd "sed -i 's|GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"rd.luks.name=$LUKS_UUID=cryptroot rd.luks.key=$LUKS_UUID=/etc/cryptsetup-keys.d/cryptroot.key root=/dev/mapper/cryptroot resume=/dev/mapper/cryptroot resume_offset=$RESUME_OFFSET rw |' /etc/default/grub"
 else
-    run_cmd "sed -i 's|GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"rd.luks.name=$LUKS_UUID=cryptroot root=/dev/mapper/cryptroot rw |' /etc/default/grub"
+    run_cmd "sed -i 's|GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"rd.luks.name=$LUKS_UUID=cryptroot rd.luks.key=$LUKS_UUID=/etc/cryptsetup-keys.d/cryptroot.key root=/dev/mapper/cryptroot rw |' /etc/default/grub"
 fi
 
 preview_after "/etc/default/grub"

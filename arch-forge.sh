@@ -188,29 +188,28 @@ show_menu() {
 
     # ── Desktop & Customization ──
     echo -e "  ${BLUE}${BOLD}🖥  DESKTOP & CUSTOMIZATION${NC}"
-    echo -e "  ${CYAN}13)${NC} Apply XFCE Desktop Settings (from GitHub)$(get_status "xfce")"
-    echo -e "  ${CYAN}14)${NC} Apply Arabic System Font (Noto Naskh Arabic)$(get_status "arabic_font")"
-    echo -e "  ${CYAN}15)${NC} Download Wallpapers (from GitHub bg/ folder)$(get_status "wallpapers")"
+    echo -e "  ${CYAN}13)${NC} Apply Arabic System Font (Noto Naskh Arabic)$(get_status "arabic_font")"
+    echo -e "  ${CYAN}14)${NC} Download Wallpapers (from GitHub bg/ folder)$(get_status "wallpapers")"
 
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
 
     # ── Hardware & Devices ──
     echo -e "  ${BLUE}${BOLD}🔌 HARDWARE & DEVICES${NC}"
-    echo -e "  ${CYAN}16)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
-    echo -e "  ${CYAN}17)${NC} Test Flash Drive (f3)$(get_status "f3_test")"
-    echo -e "  ${CYAN}18)${NC} Setup MTP Phone Connection (libmtp + gvfs-mtp)$(get_status "mtp_phone")"
+    echo -e "  ${CYAN}15)${NC} Setup Bluetooth (bluez + bluetoothctl)$(get_status "bluetooth")"
+    echo -e "  ${CYAN}16)${NC} Test Flash Drive (f3)$(get_status "f3_test")"
+    echo -e "  ${CYAN}17)${NC} Setup MTP Phone Connection (libmtp + gvfs-mtp)$(get_status "mtp_phone")"
 
     echo -e "  ${MAGENTA}────────────────────────────────────────────${NC}"
 
     # ── Gaming ──
     echo -e "  ${BLUE}${BOLD}🕹  GAMING${NC}"
-    echo -e "  ${CYAN}19)${NC} Install Gaming Tools (Lutris, Wine, MangoHud)$(get_status "gaming")"
+    echo -e "  ${CYAN}18)${NC} Install Gaming Tools (Lutris, Wine, MangoHud)$(get_status "gaming")"
 
     echo -e "  ${MAGENTA}════════════════════════════════════════════${NC}"
-    echo -e "  ${YELLOW}20)${NC} Quick Reference (Useful Commands)"
-    echo -e "  ${RED}21)${NC} Exit"
+    echo -e "  ${YELLOW}19)${NC} Quick Reference (Useful Commands)"
+    echo -e "  ${RED}20)${NC} Exit"
     echo ""
-    read -p "Select an option [1-21]: " opt
+    read -p "Select an option [1-20]: " opt
 }
 
 # ==============================================================================
@@ -410,81 +409,7 @@ install_tools() {
     success "All useful tools are installed!"
 }
 
-# ==============================================================================
-# SECTION 6: APPLY XFCE DESKTOP CONFIGURATIONS
-# ==============================================================================
 
-apply_xfce_configs() {
-    section_header "SECTION 6: XFCE CUSTOMIZATION (FROM GITHUB)"
-
-    local XFCE_CONFIG_DIR="$HOME/.config/xfce4"
-    local REPO_URL="https://github.com/pub00/pub-data.git"
-    local TMP_DIR="/tmp/pub-data-xfce-setup"
-
-    msg "Step 1: Downloading configurations from GitHub"
-    brief "Cloning repository to fetch the complete xfce4 folder"
-    run_cmd "rm -rf $TMP_DIR"
-    run_cmd "git clone --depth 1 $REPO_URL $TMP_DIR"
-    check_success "Repository download"
-    wait_step
-
-    msg "Step 2: Stopping xfconfd (to prevent overwrite on logout)"
-    brief "xfconfd keeps XFCE settings in memory and writes them back on logout.
-       If we copy new config files while it's running, it will overwrite them
-       with the old settings when you log out. We must kill it first."
-    echo ""
-    if pkill -f xfconfd 2>/dev/null; then
-        success "xfconfd stopped successfully."
-    else
-        warn "xfconfd was not running (this is fine if you're not in a desktop session)."
-    fi
-    wait_step
-
-    msg "Step 3: Applying XFCE configurations"
-    brief "Copying the entire xfce4 folder to ~/.config/xfce4/ (User Permissions)"
-    
-    # Ensure destination exists
-    run_cmd "mkdir -p $XFCE_CONFIG_DIR"
-    
-    if [ -d "$TMP_DIR/xfce4" ]; then
-        # cp -a preserves structure, -T ensures contents merge properly
-        # NO sudo used here, keeping permissions for the current user
-        run_cmd "cp -a $TMP_DIR/xfce4/* $XFCE_CONFIG_DIR/"
-        check_success "Configuration overwrite"
-    else
-        error "Could not find 'xfce4' directory in the repository!"
-    fi
-    wait_step
-
-    msg "Step 4: Cleaning up temporary files"
-    run_cmd "rm -rf $TMP_DIR"
-
-    msg "Step 5: Restarting xfconfd and XFCE panel"
-    brief "Restarting xfconfd so it loads the NEW config files from disk.
-       Also restarting the panel to apply panel layout changes immediately."
-    echo ""
-    # xfconfd will auto-restart when XFCE needs it, but we can trigger it
-    if command -v xfconfd &>/dev/null; then
-        run_cmd "xfconfd &"
-        success "xfconfd restarted with new configurations."
-    fi
-    # Restart the panel to apply layout changes
-    if command -v xfce4-panel &>/dev/null; then
-        run_cmd "xfce4-panel -r"
-        success "Panel restarted."
-    fi
-    wait_step
-
-    msg "Step 6: Final Notes"
-    warn "For FULL effect (window manager theme, desktop icons, etc.):"
-    warn "Log out and log back in, or reboot."
-    echo -e "${YELLOW}>> The panel and most settings should already be applied.${NC}"
-    echo -e "${YELLOW}>> If anything looks wrong, a simple reboot will fix it.${NC}"
-    wait_step
-
-    mark_completed "xfce"
-    success "XFCE desktop configurations successfully applied!"
-}
 
 # ==============================================================================
 # SECTION 7: SECURE MANAGER (FROM PUB00/PUB-DATA)
@@ -941,8 +866,8 @@ install_bluetooth() {
        bluez          = Linux Bluetooth protocol stack (core)
        bluez-utils    = CLI tools (bluetoothctl)
        bluez-obex     = OBEX protocol for file transfer (separated since 2024)
-       blueman        = GTK Bluetooth manager (GUI for pairing, sending files)
-       xdg-user-dirs  = ensures ~/Downloads, ~/Documents etc. exist for transfers"
+       xdg-user-dirs  = ensures ~/Downloads, ~/Documents etc. exist for transfers
+       Note: KDE Plasma manages Bluetooth natively via BlueDevil in System Settings."
     echo ""
     wait_step
 
@@ -954,9 +879,6 @@ install_bluetooth() {
         run_cmd "pacman -Qs bluez"
     else
         warn "No Bluetooth packages detected."
-    fi
-    if pacman -Qq blueman &>/dev/null 2>&1; then
-        success "blueman is already installed."
     fi
     if pacman -Qq xdg-user-dirs &>/dev/null 2>&1; then
         success "xdg-user-dirs is already installed."
@@ -990,24 +912,8 @@ install_bluetooth() {
     fi
     wait_step
 
-    # --- Step 4: Install Blueman (GUI manager) ---
-    msg "Step 4: Installing Blueman (GTK Bluetooth Manager)"
-    brief "blueman provides a graphical interface for:
-       - Pairing and connecting devices
-       - Sending/receiving files with drag-and-drop
-       - Managing trusted devices
-       - System tray applet for quick access"
-    echo ""
-    if pacman -Qq blueman &>/dev/null 2>&1; then
-        success "blueman is already installed. Skipping."
-    else
-        run_cmd "sudo pacman -S --needed --noconfirm blueman"
-        check_success "blueman installation"
-    fi
-    wait_step
-
-    # --- Step 5: Install xdg-user-dirs ---
-    msg "Step 5: Ensuring standard user directories exist (xdg-user-dirs)"
+    # --- Step 4: Install xdg-user-dirs ---
+    msg "Step 4: Ensuring standard user directories exist (xdg-user-dirs)"
     brief "xdg-user-dirs creates standard directories like ~/Downloads,
        ~/Documents, ~/Pictures etc. These are needed so Bluetooth
        file transfers have a proper destination folder."
@@ -1022,8 +928,8 @@ install_bluetooth() {
     success "User directories are ready."
     wait_step
 
-    # --- Step 6: Enable bluetooth.service (system) ---
-    msg "Step 6: Enabling bluetooth.service (system-wide)"
+    # --- Step 5: Enable bluetooth.service (system) ---
+    msg "Step 5: Enabling bluetooth.service (system-wide)"
     brief "This enables the systemd bluetooth service so it starts
        automatically on every boot, and starts it immediately now."
     echo ""
@@ -1031,8 +937,8 @@ install_bluetooth() {
     check_success "bluetooth.service"
     wait_step
 
-    # --- Step 7: Enable obex.service (user) ---
-    msg "Step 7: Enabling obex.service (user session — for file transfers)"
+    # --- Step 6: Enable obex.service (user) ---
+    msg "Step 6: Enabling obex.service (user session — for file transfers)"
     brief "obex.service runs under your user session and handles
        incoming/outgoing file transfers via Bluetooth OBEX protocol.
        Without this, sending files from phone to PC will fail silently."
@@ -1041,8 +947,8 @@ install_bluetooth() {
     check_success "obex.service"
     wait_step
 
-    # --- Step 8: Verify all services ---
-    msg "Step 8: Verifying all Bluetooth services"
+    # --- Step 7: Verify all services ---
+    msg "Step 7: Verifying all Bluetooth services"
     echo ""
     echo -e "  ${BOLD}bluetooth.service (system):${NC}"
     run_cmd "systemctl status bluetooth --no-pager -l"
@@ -1054,8 +960,8 @@ install_bluetooth() {
     mark_completed "bluetooth"
     success "Bluetooth full stack installed and all services are running!"
 
-    # --- Step 9: Command Reference ---
-    msg "Step 9: Bluetooth Quick Reference"
+    # --- Step 8: Command Reference ---
+    msg "Step 8: Bluetooth Quick Reference"
     echo ""
     echo -e "  ${BOLD}Interactive mode:${NC}"
     echo -e "  ${CYAN}  bluetoothctl${NC}"
@@ -1082,8 +988,6 @@ install_bluetooth() {
     echo ""
     echo -e "  ${BOLD}File transfer (OBEX):${NC}"
     echo -e "  ${CYAN}  bluetooth-sendto${NC}             ${DIM}# GUI send file dialog${NC}"
-    echo -e "  ${CYAN}  blueman-manager${NC}              ${DIM}# full GUI manager${NC}"
-    echo -e "  ${CYAN}  blueman-sendto${NC}               ${DIM}# send file via Blueman${NC}"
     echo ""
     echo -e "  ${BOLD}Services:${NC}"
     echo -e "  ${CYAN}  systemctl status bluetooth${NC}                  ${DIM}# core service${NC}"
@@ -1091,11 +995,11 @@ install_bluetooth() {
     echo -e "  ${CYAN}  sudo systemctl restart bluetooth${NC}"
     echo -e "  ${CYAN}  systemctl --user restart obex.service${NC}"
     echo ""
-    echo -e "  ${YELLOW}TIP:${NC} ${DIM}View these commands anytime → Main Menu → Quick Reference${NC}"
+    echo -e "  ${YELLOW}TIP:${NC} ${DIM}Manage Bluetooth devices directly from KDE System Settings & Taskbar.${NC}"
     echo ""
     wait_step
 
-    success "Bluetooth setup complete! Use 'blueman-manager' for GUI or 'bluetoothctl' for CLI."
+    success "Bluetooth setup complete! Manage devices from KDE Taskbar / Settings or via 'bluetoothctl'."
 }
 
 # ==============================================================================
@@ -1152,18 +1056,18 @@ setup_mtp_phone() {
        libmtp    = Core MTP library — enables the system to detect MTP devices.
                    After installing, 'mtp-detect' will prompt your phone
                    to ask if you want to share data.
-       gvfs-mtp  = GVFS backend for MTP — enables file managers (Thunar, etc.)
+       gvfs-mtp  = GVFS backend for MTP — enables file managers (Dolphin, etc.)
                    and 'gio' commands to browse phone storage.
 
        After installation you can:
          • mtp-detect           → detect connected MTP devices
          • gio mount -li        → list all mounted resources (MTP, drives, etc.)
-         • gio mount \"mtp://...\" → mount phone storage
-         • thunar /run/user/\$(id -u)/gvfs → browse phone files
+         • gio mount "mtp://..." → mount phone storage
+         • dolphin /run/user/$(id -u)/gvfs → browse phone files
 
-       Note: In recent XFCE4 updates, Thunar shows connected phones
-       directly in the sidebar (alongside Trash, Computer, etc.)
-       so manual mounting may no longer be needed."
+       Note: In Dolphin, connected phones appear
+       directly in the sidebar (under Devices)
+       so manual mounting is usually not needed."
     echo ""
     wait_step
 
@@ -1208,10 +1112,10 @@ setup_mtp_phone() {
     echo -e "  ${CYAN}  mtp-detect${NC}                         → Detect connected MTP devices"
     echo -e "  ${CYAN}  gio mount -li${NC}                      → List all mounted resources"
     echo -e "  ${CYAN}  gio mount \"mtp://...\"${NC}              → Mount phone storage"
-    echo -e "  ${CYAN}  thunar /run/user/\$(id -u)/gvfs${NC}     → Browse phone files"
+    echo -e "  ${CYAN}  dolphin /run/user/\$(id -u)/gvfs${NC}    → Browse phone files"
     echo ""
-    echo -e "  ${YELLOW}TIP:${NC} In latest XFCE4/Thunar, your phone may appear"
-    echo -e "       directly in the sidebar — no manual mount needed!"
+    echo -e "  ${YELLOW}TIP:${NC} In Dolphin, your phone automatically appears"
+    echo -e "       directly in the sidebar under 'Devices'!"
     echo ""
     wait_step
 }
@@ -1465,9 +1369,7 @@ show_quick_reference() {
     echo -e "  ${CYAN}bluetoothctl info XX:XX:..${NC}         ${DIM}# device details${NC}"
     echo -e "  ${CYAN}bluetoothctl remove XX:XX:..${NC}       ${DIM}# unpair/forget${NC}"
     echo -e "  ${MAGENTA}  ── File Transfer (OBEX) ──${NC}"
-    echo -e "  ${CYAN}blueman-manager${NC}                    ${DIM}# full GUI manager${NC}"
-    echo -e "  ${CYAN}blueman-sendto${NC}                     ${DIM}# send file via GUI${NC}"
-    echo -e "  ${CYAN}bluetooth-sendto${NC}                   ${DIM}# GNOME send dialog${NC}"
+    echo -e "  ${CYAN}bluetooth-sendto${NC}                   ${DIM}# GUI send file dialog${NC}"
     echo -e "  ${MAGENTA}  ── Services ──${NC}"
     echo -e "  ${CYAN}systemctl status bluetooth${NC}         ${DIM}# core BT service${NC}"
     echo -e "  ${CYAN}systemctl --user status obex${NC}       ${DIM}# file transfer service${NC}"
@@ -1522,7 +1424,7 @@ show_quick_reference() {
     echo -e "  ${CYAN}journalctl -xe${NC}                    ${DIM}# recent system logs${NC}"
     echo -e "  ${CYAN}htop${NC}                               ${DIM}# process monitor${NC}"
     echo -e "  ${CYAN}fc-list | grep <font>${NC}             ${DIM}# check installed fonts${NC}"
-    echo -e "  ${CYAN}xfce4-panel -r${NC}                    ${DIM}# restart XFCE panel${NC}"
+    echo -e "  ${CYAN}plasmashell --replace &${NC}           ${DIM}# restart Plasma shell${NC}"
     echo ""
     wait_step
 }
@@ -1552,18 +1454,17 @@ while true; do
         # 💻 Virtualization
         12) install_qemu_kvm ;;
         # 🖥 Desktop & Customization
-        13) apply_xfce_configs ;;
-        14) apply_arabic_font ;;
-        15) download_wallpapers ;;
+        13) apply_arabic_font ;;
+        14) download_wallpapers ;;
         # 🔌 Hardware & Devices
-        16) install_bluetooth ;;
-        17) test_flash_drive ;;
-        18) setup_mtp_phone ;;
+        15) install_bluetooth ;;
+        16) test_flash_drive ;;
+        17) setup_mtp_phone ;;
         # 🕹 Gaming
-        19) install_gaming_tools ;;
+        18) install_gaming_tools ;;
         # ───
-        20) show_quick_reference ;;
-        21) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
+        19) show_quick_reference ;;
+        20) echo -e "\n${CYAN}Thanks for using arch-forge. Happy hacking!${NC}"; exit 0 ;;
         *) warn "Invalid option." ;;
     esac
     echo ""
